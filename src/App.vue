@@ -1,8 +1,10 @@
 <template>
   <div id="app">
-    <auth-wrapper>
-      <diary-module baseUrl="http://diary.convene.sk" />
-    </auth-wrapper>
+    <div class="container">
+      <auth-wrapper>
+        <diary-module baseUrl="http://diary.convene.sk" />
+      </auth-wrapper>
+    </div>
   </div>
 </template>
 

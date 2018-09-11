@@ -19,7 +19,8 @@ import DiaryInfo from './DiaryInfo';
 
 import { mapGetters } from 'vuex';
 
-import { DiaryTransition } from '@/components/transitions'
+import { DiaryTransition } from '@/components/transitions';
+import { Loading, ClickOutside } from '@/directives';
 
 export default {
   components: {
@@ -27,6 +28,10 @@ export default {
     DiaryControls,
     DiaryInfo,
     DiaryTransition
+  },
+  directives: {
+    Loading,
+    ClickOutside
   },
   computed: {
     ...mapGetters('$_diary', ['loadingDiary', 'scopedDay', 'weekDays'])

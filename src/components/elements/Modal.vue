@@ -34,6 +34,7 @@
 </template>
 
 <script>
+import { ClickOutside } from '@/directives';
 export default {
   props: {
     show: {
@@ -63,6 +64,9 @@ export default {
       }
     }
   },
+  directives: {
+    ClickOutside
+  },
   watch: {
     show (newVal) {
       document.body.classList.toggle('noscroll', newVal);
@@ -83,11 +87,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss">
-.modal {
-  display: block;
-  background: rgba(0, 0, 0, 0.4);
-  overflow-y: auto !important;
-}
-</style>

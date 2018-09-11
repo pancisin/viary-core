@@ -20,7 +20,7 @@
               </div>
               <div class="peer peer-greed">
                 <span>
-                  <span class="fw-500">{{ user.display_name }}</span>
+                  <span class="fw-500">{{ user != null ? user.display_name : '' }}</span>
                   <p class="c-grey-600 m-0">{{ scopedDiary.name }}</p>
                 </span>
                 <!-- <p class="m-0">
@@ -65,7 +65,7 @@
 </template>
 
 <script>
-import { Dropdown, DropdownItem } from '@/components/elements/dropdown';
+import { Dropdown, DropdownItem } from '@/components/elements';
 import { mapGetters, mapActions } from 'vuex';
 import { Modal } from '@/components/elements';
 import DiarySwitch from './DiarySwitch';
@@ -95,9 +95,10 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['logout']),
+    ...mapActions('$_auth', ['logout']),
     logoutNow() {
       this.logout().then(() => {
+        this.$store.dispatch('$_diary', 'flushDiaries')
         this.$router.push({ name: 'signin' })
       })
     },

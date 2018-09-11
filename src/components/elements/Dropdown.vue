@@ -1,4 +1,5 @@
 <script>
+import { ClickOutside } from '@/directives';
 export default {
   props: {
     tag: {
@@ -7,6 +8,9 @@ export default {
         return 'div';
       }
     }
+  },
+  directives: {
+    ClickOutside
   },
   data () {
     return {

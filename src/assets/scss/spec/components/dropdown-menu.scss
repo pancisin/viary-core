@@ -1,0 +1,38 @@
+.dropdown-menu {
+  min-width: 350px;
+  padding: 0;
+
+  @include to($breakpoint-sm) {
+    max-width: 300px;
+  }
+
+  display: block;
+  margin: 0;
+  transition: transform 0.15s ease-out;
+
+  left: auto;
+  right: 0;
+  top: 135%;
+
+  > li {
+    width: 100%;
+
+    > a {
+      line-height: 1.5;
+      min-height: auto;
+      padding: 10px 15px;
+    }
+  }
+
+  .divider {
+    border-bottom: 1px solid $border-color;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  > li {
+    > a {
+      transition: all 0.2s ease-out;
+    }
+  }
+}

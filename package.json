@@ -1,6 +1,6 @@
 {
   "name": "diary-core",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "private": false,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -9,6 +9,11 @@
     "build:modules": "vue-cli-service build --target lib --dest dist/modules --name diary-core-modules ./src/modules/index.js",
     "build:plugins": "vue-cli-service build --target lib --dest dist/plugins --name diary-core-plugins ./src/plugins/index.js"
   },
+  "files": [
+    "src",
+    "dist/*.js",
+    "dist/*.css"
+  ],
   "dependencies": {
     "bootstrap": "^4.1.3",
     "debounce": "^1.2.0",

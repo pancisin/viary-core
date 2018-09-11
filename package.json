@@ -4,8 +4,10 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "build": "vue-cli-service build --target lib --name diary-core ./src/build.js",
+    "build:modules": "vue-cli-service build --target lib --dest dist/modules --name diary-core-modules ./src/modules/index.js",
+    "build:plugins": "vue-cli-service build --target lib --dest dist/plugins --name diary-core-plugins ./src/plugins/index.js"
   },
   "dependencies": {
     "bootstrap": "^4.1.3",
@@ -13,6 +15,7 @@
     "font-awesome": "^4.7.0",
     "linearicons": "^1.0.1",
     "luxon": "^1.3.3",
+    "velocity-animate": "^1.5.2",
     "vue": "^2.5.17",
     "vue-resource": "^1.5.1",
     "vue-router": "^3.0.1",

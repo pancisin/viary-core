@@ -1,0 +1,33 @@
+@font-face {
+  font-family: 'Linearicons-Free';
+	src:url('#{$linearico-font-path}/Linearicons-Free.eot?v=#{$linearico-version}');
+	src:url('#{$linearico-font-path}/Linearicons-Free.eot?#iefixw118d&v=#{$linearico-version}') format('embedded-opentype'),
+		url('#{$linearico-font-path}/Linearicons-Free.woff2?v=#{$linearico-version}') format('woff2'),
+		url('#{$linearico-font-path}/Linearicons-Free.woff?v=#{$linearico-version}') format('woff'),
+		url('#{$linearico-font-path}/Linearicons-Free.ttf?v=#{$linearico-version}') format('truetype'),
+		url('#{$linearico-font-path}/Linearicons-Free.svg#Linearicons-Free') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+[class^="#{$linearico-css-prefix}"], [class*=" #{$linearico-css-prefix}"]{
+    display: inline-block;
+    font: normal normal normal $linearico-font-size-base/1 "Linearicons-Free";
+    font-size: inherit;
+    speak: none;
+    vertical-align: $linearico-v-align;
+    text-rendering: auto;
+
+    /* Enable Ligatures ================ */
+    -webkit-font-feature-settings: "liga";
+    -moz-font-feature-settings: "liga=1";
+    -moz-font-feature-settings: "liga";
+    -ms-font-feature-settings: "liga" 1;
+    -o-font-feature-settings: "liga";
+    font-feature-settings: "liga";
+    
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transform: translate(0, 0);
+}

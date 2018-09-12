@@ -8,9 +8,6 @@
 import Diary from './_components/Diary';
 import store from './_store';
 
-import 'font-awesome/css/font-awesome.css';
-import 'linearicons/dist/web-font/style.css';
-import 'weather-icons/css/weather-icons.min.css';
 import './_assets/scss/index.scss';
 
 const MODULE_NAMESPACE = '$_diary';

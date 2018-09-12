@@ -8,7 +8,7 @@ export default (request, next) => {
     request.headers.set('Authorization', 'Bearer ' + token);
     next(response => {
       if (response.status === 401) {
-        store.dispatch('logout').then(() => {
+        store.dispatch('$_auth', 'logout').then(() => {
           router.replace({
             name: 'signin',
             query: {

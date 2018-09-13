@@ -8,8 +8,6 @@
 import Diary from './_components/Diary';
 import store from './_store';
 
-import './_assets/scss/index.scss';
-
 const MODULE_NAMESPACE = '$_diary';
 
 export default {
@@ -41,3 +39,7 @@ export default {
   }
 };
 </script>
+
+<style lang="scss">
+@import './_assets/scss/index.scss';
+</style>

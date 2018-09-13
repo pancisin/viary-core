@@ -1,6 +1,6 @@
 {
   "name": "diary-core",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "private": false,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -30,9 +30,9 @@
     "@vue/cli-plugin-babel": "^3.0.1",
     "@vue/cli-plugin-eslint": "^3.0.1",
     "@vue/cli-service": "^3.0.1",
-    "extract-text-webpack-plugin": "^3.0.2",
     "node-sass": "^4.9.3",
     "sass-loader": "^7.1.0",
+    "mini-css-extract-plugin": "^0.4.2",
     "vue-template-compiler": "^2.5.17"
   },
   "eslintConfig": {

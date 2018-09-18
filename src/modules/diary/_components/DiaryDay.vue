@@ -15,9 +15,7 @@
         <span class="wi fsz-md float-right mT-5" :class="dayWeather(day)"></span>
       </div>
 
-      <div v-for="(note, idx) in day.notes" :key="idx">
-        - {{ note.content }}
-      </div>
+      <diary-day-note v-for="(note, idx) in day.notes" :key="idx" :note="note" />
 
       <form class="form" @submit.prevent="submitDayNote">
         <input 
@@ -37,8 +35,12 @@ import debounce from 'debounce';
 import { DateTime } from 'luxon';
 import { mapGetters, mapActions } from 'vuex';
 import { WeatherIconsMap } from '@/maps';
+import DiaryDayNote from './DiaryDayNote';
 
 export default {
+  components: {
+    DiaryDayNote
+  },
   props: {
     day: {
       type: Object,

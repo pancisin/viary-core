@@ -1,8 +1,8 @@
 import * as types from './mutation_types';
 import AuthApi from '../_api/auth.api';
 
-export default ({ baseUrl, instance }) => {
-  const Api = AuthApi(baseUrl, instance)
+export default ({ baseUrl }) => {
+  const Api = AuthApi(baseUrl)
   
   const login = ({ state, dispatch }, { credentials, remember }) => {
     if (state.authenticated) {

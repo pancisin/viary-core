@@ -7,9 +7,9 @@ import { DateTime } from 'luxon';
 
 // import router from '@/router'
 
-export default ({ baseUrl, instance }) => {
-  const Api = DiaryApi(baseUrl, instance);
-  const WeatherApiInstance = WeatherApi(instance);
+export default ({ baseUrl }) => {
+  const Api = DiaryApi(baseUrl);
+  const WeatherApiInstance = WeatherApi();
 
   const initializeDiaries = ({ commit }) => {
     commit(types.SET_LOADING_DIARY, true);
@@ -58,7 +58,7 @@ export default ({ baseUrl, instance }) => {
       commit(types.SCOPE_DIARY, { diary });
 
       const day = scopeDate != null ? DateTime.fromSQL(scopeDate) : DateTime.local();
-      dispatch('scopeDay', { day }).then(() => {
+      dispatch('scopeDay', { day, force: true }).then(() => {
         resolve(diary);
       })
     })
@@ -71,26 +71,25 @@ export default ({ baseUrl, instance }) => {
    * @param {DateTime} param1.day - scoped day datetime object
    * @param {Boolean} param2.force - false 
    */
-  const scopeDay = ({ commit, dispatch }, { day }) => {
-    // if (day.toSQLDate() === getters.scopedDay.toSQLDate() && !force || getters.scopedDiary.slug == null) {
-    //   return
-    // }
-    
-    // router.replace({
-    //   name: 'diary',
-    //   query: {
-    //     date_scope: day.toSQLDate()
-    //   }
-    // })
-
+  const scopeDay = ({ commit, getters, dispatch }, { day, force }) => {
     return new Promise(resolve => {
-      dispatch('loadWeekData', day.weekNumber).then(() => {
-  
-        commit(types.SCOPE_DAY, { day: day.toSQL() });
-        resolve();
-      })
+      const weekUpdate = (day.weekNumber !== getters.scopedDay.weekNumber) || force;
 
-      dispatch('loadWeekWeatherData', day.weekNumber)
+      const resolveCallback = (sqlDate) => {
+        commit(types.SCOPE_DAY, { day: sqlDate });
+        resolve();
+      }
+
+      if (weekUpdate) {
+        const p1 = dispatch('loadWeekData', day.weekNumber)
+        const p2 = dispatch('loadWeekWeatherData', day.weekNumber)
+
+        Promise.all([p1, p2]).then(() => {
+          resolveCallback(day.toSQL())
+        })
+      } else {
+        resolveCallback(day.toSQL())
+      }
     })
   }
 

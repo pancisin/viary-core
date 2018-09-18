@@ -9,7 +9,6 @@
 </template>
 
 <script>
-import Runner from './components/Runner'
 import AuthWrapper from './components/AuthWrapper'
 import { DiaryModule } from './modules'
 
@@ -17,7 +16,6 @@ export default {
   name: 'app',
   components: {
     AuthWrapper,
-    Runner,
     DiaryModule
   }
 }

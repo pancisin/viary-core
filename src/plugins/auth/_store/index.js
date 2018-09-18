@@ -8,7 +8,7 @@ const state = {
   loadingUser: false
 }
 
-export default function (options) {
+export default (options) => {
   return {
     namespaced: true,
     state: { ...state },

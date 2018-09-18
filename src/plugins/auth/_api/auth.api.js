@@ -1,6 +1,6 @@
 import Vue from 'vue';
 
-export default function (baseUrl) {
+export default (baseUrl) => {
   const API_URL = `${baseUrl}`;
   const ME_API_URL = `${baseUrl}/api/v1/user/me`;
 

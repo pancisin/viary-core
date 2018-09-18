@@ -11,12 +11,17 @@ const AuthPlugin = {
     if (!store) {
       throw new Error('Please provide vuex store.');
     }
-    
+
     store.registerModule(MODULE_NAMESPACE, authStore({ baseUrl: baseUrl || '' }));
     
-    Vue.http.interceptors.push(AuthInterceptor);
+    if (!Vue.http) {
+      throw new Error('Vue resource plugin is strongly required!')
+    }
     
-    store.dispatch(`${MODULE_NAMESPACE}/initializeUser`)
+    Vue.http.interceptors.push(AuthInterceptor);
+    if (store.getters['$_auth/authenticated']) {
+      store.dispatch(`${MODULE_NAMESPACE}/initializeUser`)
+    }
 
     Vue.component('login-form', LoginForm)
     Vue.component('register-form', RegisterForm)

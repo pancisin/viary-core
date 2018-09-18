@@ -7,7 +7,7 @@ import { DateTime } from 'luxon';
 
 // import router from '@/router'
 
-export default function ({ baseUrl }) {
+export default ({ baseUrl }) => {
   const Api = DiaryApi(baseUrl);
   
   const initializeDiaries = ({ commit, dispatch }) => {
@@ -63,6 +63,13 @@ export default function ({ baseUrl }) {
     })
   }
 
+  /**
+   * Scope day and load all data required for week construction.
+   * @param {Object} param0 - vuex object
+   * @param {Object} param1 - an object
+   * @param {DateTime} param1.day - scoped day datetime object
+   * @param {Boolean} param2.force - false 
+   */
   const scopeDay = ({ commit, getters, dispatch }, { day, force }) => {
     // if (day.toSQLDate() === getters.scopedDay.toSQLDate() && !force || getters.scopedDiary.slug == null) {
     //   return

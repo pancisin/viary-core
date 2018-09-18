@@ -15,12 +15,20 @@
         <span class="wi fsz-md float-right mT-5" :class="dayWeather(day)"></span>
       </div>
 
-      <textarea 
-        rows="3" 
-        class="diary-day-content flex-grow-1 text-secondary" 
-        v-model="day.content" 
-        @input="dayUpdate">
-      </textarea>
+      <div v-for="(note, idx) in day.notes" :key="idx">
+        - {{ note.content }}
+      </div>
+
+      <form class="form" @submit.prevent="submitDayNote">
+        <input 
+          class="diary-day-content flex-grow-1 text-secondary" >
+          <!-- v-model="day.content"  -->
+          <!-- @input="dayUpdate"> -->
+        <button type="submit" class="btn btn-link">
+          send
+          <!-- <i class="lnr lnr-"></i> -->
+        </button>
+      </form>
     </div>
 </template>
 
@@ -43,18 +51,26 @@ export default {
     ...mapGetters('$_diary', ['scopedDay']),
     DateTime() {
       return DateTime;
-    },
-    weather () {
-      const opts = ['cloud', 'sun', 'drop']
-      return opts[Math.floor(Math.random() * opts.length)];
     }
   },
   methods: {
-    ...mapActions('$_diary', ['scopeDay', 'updateScopedDay']),
+    ...mapActions('$_diary', ['scopeDay', 'updateScopedDay', 'addDayNote']),
 
     dayUpdate: debounce(function(e) {
       this.updateScopedDay(e.target.value)
     }, 1000),
+
+    submitDayNote (e) {
+      // this.day.notes.push({
+      //   content: e.target[0].value
+      // })
+      // console.log(this.day.notes)
+      // e.target[0].value = ''
+
+      this.addDayNote(e.target[0].value).then(() => {
+        e.target[0].value = ''
+      })
+    },
 
     focusDayContent (day, e) {
       this.scopeDay({ day });

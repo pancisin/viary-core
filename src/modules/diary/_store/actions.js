@@ -1,6 +1,5 @@
 import DiaryApi from '../_api/diary.api';
 import WeatherApi from '../_api/weather.api';
-
 import * as types from './mutation-types';
 
 import { DateTime } from 'luxon';
@@ -74,17 +73,19 @@ export default ({ baseUrl }) => {
   const scopeDay = ({ commit, getters, dispatch }, { day, force }) => {
     return new Promise(resolve => {
       const weekUpdate = (day.weekNumber !== getters.scopedDay.weekNumber) || force;
+      commit(types.SET_LOADING_DIARY, true);
 
       const resolveCallback = (sqlDate) => {
         commit(types.SCOPE_DAY, { day: sqlDate });
+        commit(types.SET_LOADING_DIARY, false);
         resolve();
       }
 
       if (weekUpdate) {
-        const p1 = dispatch('loadWeekData', day.weekNumber)
-        const p2 = dispatch('loadWeekWeatherData', day.weekNumber)
-
-        Promise.all([p1, p2]).then(() => {
+        Promise.all([
+          dispatch('loadWeekData', day.weekNumber),
+          dispatch('loadWeekWeatherData', day.weekNumber)
+        ]).then(() => {
           resolveCallback(day.toSQL())
         })
       } else {
@@ -96,15 +97,24 @@ export default ({ baseUrl }) => {
   const loadWeekData = ({ commit, getters }, weekNumber) => {
     const week = DateTime.fromObject({ weekNumber })
     // if (getters.getDiaryWeek(weekNumber) == null) {
-      commit(types.SET_LOADING_DIARY, true);
+      
       return new Promise(resolve => {
         Api.getDays(getters.scopedDiary.slug, {
           from: week.startOf('week').toFormat('MM/dd/yyyy'),
           to: week.endOf('week').toFormat('MM/dd/yyyy')
         }, days => {
-          commit(types.SET_SCOPED_DIARY_DAYS, { days });
-          commit(types.ADD_WEEK_TO_SCOPE, { weekNumber, days });
-          commit(types.SET_LOADING_DIARY, false);
+          const changedDays = days.map(d => { 
+            return {
+              ...d,
+              notes: [
+                {
+                  content: d.content
+                }
+              ]
+            }
+          })
+          // commit(types.SET_SCOPED_DIARY_DAYS, { days });
+          commit(types.ADD_WEEK_TO_SCOPE, { weekNumber, days: changedDays });
           resolve();
         })
       })
@@ -142,6 +152,20 @@ export default ({ baseUrl }) => {
     })
   }
 
+  const addDayNote = ({ commit, getters }, note) => {
+    const scopedDay = getters.scopedDay;
+    const dayNumber = scopedDay.diff(scopedDay.startOf('year'), 'days').toObject().days
+
+    return new Promise(resolve => {
+      const noteObj = {
+        content: note
+      }
+
+      commit(types.ADD_NOTE, { note: noteObj, dayNumber, weekNumber: scopedDay.weekNumber })
+      resolve()
+    })
+  }
+
   const flushDiaries = ({ commit }) => {
     commit(types.FLUSH_DIARY_MODULE_STATE);
   }
@@ -154,6 +178,7 @@ export default ({ baseUrl }) => {
     loadWeekData,
     loadWeekWeatherData,
     updateScopedDay,
+    addDayNote,
     flushDiaries
   }
 }

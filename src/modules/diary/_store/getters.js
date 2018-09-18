@@ -35,9 +35,14 @@ export default {
 
       const weatherData = getters.forecastData.filter(w => DateTime.fromMillis(w.dt * 1000).toSQLDate() === d.toSQLDate());
 
-      Object.assign(d, { content: '', weatherData })
+      Object.assign(d, { 
+        // content: '', 
+        weatherData,
+        notes: []
+      })
       if (c != null) {
-        d.content = c.content;
+        // d.content = c.content;
+        d.notes = c.notes
       }
       return d;
     })

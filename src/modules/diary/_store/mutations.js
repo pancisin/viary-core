@@ -73,5 +73,32 @@ export default {
 
   [types.SET_FORECAST_DATA] (state, forecast) {
     state.forecastData = forecast;
+  },
+
+  [types.ADD_NOTE] (state, { weekNumber, dayNumber, note }) {
+    state.scopedDiaryWeeks = state.scopedDiaryWeeks.map(w => {
+      if (w.weekNumber === weekNumber) {
+        const dayIdx = w.days.findIndex(d => d.date_number === dayNumber)
+        
+        if (dayIdx !== -1) {
+          const day = w.days[dayIdx]
+          w.days.splice(dayIdx, 1, {
+            ...day,
+            notes: [
+              ...day.notes,
+              note
+            ]
+          })
+        } else {
+          w.days.push({
+            date_number: dayNumber,
+            year: 2018,
+            notes: [ note ]
+          })
+        }
+      }
+
+      return w
+    })
   }
 }

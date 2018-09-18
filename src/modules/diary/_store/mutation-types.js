@@ -10,3 +10,5 @@ export const SET_SAVING_DIARY = 'SET_SAVING_DIARY';
 export const ADD_DIARY = 'ADD_DIARY';
 export const FLUSH_DIARY_MODULE_STATE = 'FLUSH_DIARY_MODULE_STATE';
 export const SET_FORECAST_DATA = 'SET_FORECAST_DATA';
+
+export const ADD_NOTE = 'ADD_NOTE';

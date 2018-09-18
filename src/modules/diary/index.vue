@@ -24,7 +24,7 @@ export default {
     Diary
   },
   created () {
-    this.$store.registerModule(MODULE_NAMESPACE, store({ baseUrl: this.baseUrl }));
+    this.$store.registerModule(MODULE_NAMESPACE, store({ baseUrl: this.baseUrl, instance: this }));
     this.$store.dispatch(`${MODULE_NAMESPACE}/initializeDiaries`).then(() => {
       this.$store.dispatch(`${MODULE_NAMESPACE}/scopeDiary`, {}).then(() => {
 

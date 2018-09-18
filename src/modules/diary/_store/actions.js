@@ -7,9 +7,10 @@ import { DateTime } from 'luxon';
 
 // import router from '@/router'
 
-export default ({ baseUrl }) => {
-  const Api = DiaryApi(baseUrl);
-  
+export default ({ baseUrl, instance }) => {
+  const Api = DiaryApi(baseUrl, instance);
+  const WeatherApiInstance = WeatherApi(instance);
+
   const initializeDiaries = ({ commit, dispatch }) => {
     commit(types.SET_LOADING_DIARY, true);
     return new Promise(resolve => {
@@ -113,8 +114,10 @@ export default ({ baseUrl }) => {
 
   const loadWeekWeatherData = ({ commit, getters }, weekNumber) => {
     return new Promise(resolve => {
-      WeatherApi.getForecastData('kosice,sk', weather => {
+      WeatherApiInstance.getForecastData('kosice,sk', weather => {
         commit(types.SET_FORECAST_DATA, weather.list)
+      }, err => {
+        
       })
     })
   }

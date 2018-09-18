@@ -1,11 +1,10 @@
 import * as types from './mutation_types';
 import AuthApi from '../_api/auth.api';
 
-export default ({ baseUrl }) => {
-  const Api = AuthApi(baseUrl)
+export default ({ baseUrl, instance }) => {
+  const Api = AuthApi(baseUrl, instance)
   
   const login = ({ state, dispatch }, { credentials, remember }) => {
-    console.log(Vue)
     if (state.authenticated) {
       return;
     }

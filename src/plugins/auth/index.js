@@ -12,7 +12,7 @@ const AuthPlugin = {
       throw new Error('Please provide vuex store.');
     }
 
-    store.registerModule(MODULE_NAMESPACE, authStore({ baseUrl: baseUrl || '' }));
+    store.registerModule(MODULE_NAMESPACE, authStore({ baseUrl: baseUrl || '', instance: Vue }));
     
     if (!Vue.http) {
       throw new Error('Vue resource plugin is strongly required!')

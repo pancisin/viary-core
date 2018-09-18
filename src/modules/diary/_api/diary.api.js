@@ -1,29 +1,27 @@
-import Vue from 'vue'
-
-export default (baseUrl) => {
+export default (baseUrl, instance) => {
   const DIARY_API_URL = `${baseUrl}/api/v1/diary`;
   const ME_API_URL = `${baseUrl}/api/v1/user/me`;
 
   const getDiaries = (success) => {
-    Vue.http.get(`${ME_API_URL}/diary`).then(response => {
+    instance.$http.get(`${ME_API_URL}/diary`).then(response => {
       success(response.body);
     })
   }
 
   const postDiary = (diary, success) => {
-    Vue.http.post(`${ME_API_URL}/diary`, diary).then(response => {
+    instance.$http.post(`${ME_API_URL}/diary`, diary).then(response => {
       success(response.body);
     })
   }
 
   const getDiary = (diaryId, success) => {
-    Vue.http.get(`${DIARY_API_URL}/${diaryId}`).then(response => {
+    instance.$http.get(`${DIARY_API_URL}/${diaryId}`).then(response => {
       success(response.body);
     })
   }
 
   const getDays = (diaryId, filter, success) => {
-    Vue.http.get(`${DIARY_API_URL}/${diaryId}/day`, {
+    instance.$http.get(`${DIARY_API_URL}/${diaryId}/day`, {
       params: {
         from: filter.from || null,
         to: filter.to || null
@@ -34,7 +32,7 @@ export default (baseUrl) => {
   }
 
   const postDay = (diaryId, { date_number, year, content }, success) => {
-    Vue.http.post(`${DIARY_API_URL}/${diaryId}/day/${date_number}/${year}`, {
+    instance.$http.post(`${DIARY_API_URL}/${diaryId}/day/${date_number}/${year}`, {
       content
     }).then(response => {
       success(response.body)

@@ -98,7 +98,7 @@ export default {
     ...mapActions('$_auth', ['logout']),
     logoutNow() {
       this.logout().then(() => {
-        this.$store.dispatch('$_diary', 'flushDiaries')
+        this.$store.dispatch('$_diary/flushDiaries')
         this.$router.push({ name: 'signin' })
       })
     },

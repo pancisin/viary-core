@@ -28,7 +28,6 @@ export default {
     },
   },
   render (h, context) {
-    console.log(context)
     const options = {
       attrs: {
         class: context.data.staticClass
@@ -64,7 +63,7 @@ export default {
             
           });
         },
-        afterEnter: (el, done) => {
+        afterEnter: el => {
           el.removeAttribute('style');
         },
         leave: (el, done) => {

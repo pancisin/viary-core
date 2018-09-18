@@ -1,10 +1,10 @@
 {
   "name": "diary-core",
-  "version": "0.1.8",
+  "version": "0.2.1",
   "private": false,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "lint": "vue-cli-service lint",
+    "lint": "vue-cli-service lint --fix",
     "build": "vue-cli-service build --target lib --name diary-core ./src/build.js",
     "build:modules": "vue-cli-service build --target lib --dest dist/modules --name diary-core-modules ./src/modules/index.js",
     "build:plugins": "vue-cli-service build --target lib --dest dist/plugins --name diary-core-plugins ./src/plugins/index.js"

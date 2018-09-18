@@ -69,7 +69,7 @@ export default {
   methods: {
     ...mapActions('$_auth', ['login']),
     submit () {
-      const ret = this.login({
+      this.login({
         credentials: this.credentials,
         remember: this.remember
       }).then(() => {

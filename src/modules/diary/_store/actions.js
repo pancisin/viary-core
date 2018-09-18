@@ -11,7 +11,7 @@ export default ({ baseUrl, instance }) => {
   const Api = DiaryApi(baseUrl, instance);
   const WeatherApiInstance = WeatherApi(instance);
 
-  const initializeDiaries = ({ commit, dispatch }) => {
+  const initializeDiaries = ({ commit }) => {
     commit(types.SET_LOADING_DIARY, true);
     return new Promise(resolve => {
       Api.getDiaries(diaries => {
@@ -71,7 +71,7 @@ export default ({ baseUrl, instance }) => {
    * @param {DateTime} param1.day - scoped day datetime object
    * @param {Boolean} param2.force - false 
    */
-  const scopeDay = ({ commit, getters, dispatch }, { day, force }) => {
+  const scopeDay = ({ commit, dispatch }, { day }) => {
     // if (day.toSQLDate() === getters.scopedDay.toSQLDate() && !force || getters.scopedDiary.slug == null) {
     //   return
     // }
@@ -112,12 +112,14 @@ export default ({ baseUrl, instance }) => {
     // }
   }
 
-  const loadWeekWeatherData = ({ commit, getters }, weekNumber) => {
+  // weekNumber param
+  const loadWeekWeatherData = ({ commit }) => {
     return new Promise(resolve => {
       WeatherApiInstance.getForecastData('kosice,sk', weather => {
         commit(types.SET_FORECAST_DATA, weather.list)
-      }, err => {
-        
+        resolve(weather)
+      }, () => {
+
       })
     })
   }
@@ -129,7 +131,7 @@ export default ({ baseUrl, instance }) => {
     commit(types.SET_SAVING_DIARY, true);
 
     return new Promise(resolve => {
-      DiaryApiApi.postDay(getters.scopedDiary.slug, {
+      Api.postDay(getters.scopedDiary.slug, {
         date_number: dayNumber,
         year: scopedDay.year,
         content

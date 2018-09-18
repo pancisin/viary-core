@@ -1,5 +1,4 @@
 import * as types from './mutation-types';
-import initialState from './state';
 
 import { DateTime } from 'luxon'
 
@@ -37,8 +36,8 @@ export default {
   },
 
   [types.UPDATE_DAY] (state, { weekNumber, day }) {
-    const weekIdx = state.scopedDiaryWeeks.findIndex(w => w.weekNumber === weekNumber)
-    const week = state.scopedDiaryWeeks[weekIdx]
+    // const weekIdx = state.scopedDiaryWeeks.findIndex(w => w.weekNumber === weekNumber)
+    // const week = state.scopedDiaryWeeks[weekIdx]
 
     state.scopedDiaryWeeks = state.scopedDiaryWeeks.map(w => {
       if (w.weekNumber === weekNumber) {

@@ -13,7 +13,7 @@ const updateLoader = (el, value) => {
 };
 
 export default {
-  bind (el, binding, node) {
+  bind (el) {
     el.style.position = 'relative';
 
     var loader = document.createElement('div');
@@ -32,7 +32,7 @@ export default {
     el.classList.toggle('_loading', binding.value);
     updateLoader(el, binding.value);
   },
-  update (el, binding, node) {
+  update (el, binding) {
     el.classList.toggle('_loading', binding.value);
     updateLoader(el, binding.value);
   }

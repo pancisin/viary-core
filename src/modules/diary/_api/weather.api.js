@@ -13,9 +13,10 @@ export default () => {
       }
     }).then(response => {
       success(response.body)
-    }).catch(err => {
-      console.error(err);
     })
+    // .catch(err => {
+    //   console.error(err);
+    // })
   }
 
   const getForecastData = (cityName, success, error) => {
@@ -32,7 +33,6 @@ export default () => {
     }).catch(err => {
       if (error) {
         error(err)
-        console.error(err)
       }
     })
   }

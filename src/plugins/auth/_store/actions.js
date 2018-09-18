@@ -18,9 +18,9 @@ export default ({ baseUrl, instance }) => {
     });
   }
 
-  const register = ({ state, dispatch }, user) => {
+  const register = ({ dispatch }, user) => {
     return new Promise(resolve => {
-      Api.register(user, result => {
+      Api.register(user, () => {
 
         dispatch('login', {
           credentials: {
@@ -46,7 +46,7 @@ export default ({ baseUrl, instance }) => {
     });
   }
 
-  const logout = ({ commit, dispatch }) => {
+  const logout = ({ commit }) => {
     return new Promise(resolve => {
       window.localStorage.removeItem('access_token');
       window.sessionStorage.removeItem('access_token');

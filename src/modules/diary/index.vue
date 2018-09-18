@@ -28,8 +28,7 @@ export default {
     this.$store.dispatch(`${MODULE_NAMESPACE}/initializeDiaries`).then(() => {
       this.$store.dispatch(`${MODULE_NAMESPACE}/scopeDiary`, {}).then(() => {
 
-      }).catch(e => {
-        console.warn(e)
+      }).catch(() => {
         this.$router.push({ name: 'diary.create', props: { intro: true } })
       })
     });

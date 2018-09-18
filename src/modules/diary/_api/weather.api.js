@@ -1,9 +1,9 @@
 const WEATHER_API_URL = 'https://api.openweathermap.org/data/2.5';
 const appId = '8a599ad2eabe8cea39f227601083f799';
-
-export default (instance) => {
+import Vue from 'vue'
+export default () => {
   const getWeatherData = (cityName, success) => {
-    instance.$http.get(`${WEATHER_API_URL}/weather`, {
+    Vue.http.get(`${WEATHER_API_URL}/weather`, {
       before (request) {
         request.headers.delete('Authorization');
       },
@@ -19,7 +19,7 @@ export default (instance) => {
   }
 
   const getForecastData = (cityName, success, error) => {
-    instance.$http.get(`${WEATHER_API_URL}/forecast`, {
+    Vue.http.get(`${WEATHER_API_URL}/forecast`, {
       before (request) {
         request.headers.delete('Authorization');
       },

@@ -1,4 +1,5 @@
-export default (baseUrl, instance) => {
+import Vue from 'vue'
+export default baseUrl => {
   const API_URL = `${baseUrl}`;
   const ME_API_URL = `${baseUrl}/api/v1/user/me`;
 
@@ -8,7 +9,7 @@ export default (baseUrl, instance) => {
       grant_type: 'password'
     };
 
-    instance.http
+    Vue.http
       .post(`${API_URL}/oauth/token`, data, {
         emulateJSON: true,
         headers: {
@@ -21,13 +22,13 @@ export default (baseUrl, instance) => {
   }
 
   const register = (user, success) => {
-    instance.http.post(`${API_URL}/api/register`, user).then(response => {
+    Vue.http.post(`${API_URL}/api/register`, user).then(response => {
       success(response.body);
     });
   }
 
   const getMe = (success) => {
-    instance.http.get(`${ME_API_URL}`).then(response => {
+    Vue.http.get(`${ME_API_URL}`).then(response => {
       success(response.body);
     });
   }

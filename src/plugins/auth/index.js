@@ -6,13 +6,12 @@ import { LoginForm, RegisterForm } from './_components'
 import AuthInterceptor from './_api/auth.interceptor';
 
 const AuthPlugin = {
-  
   install(Vue, { store, baseUrl }) {
     if (!store) {
       throw new Error('Please provide vuex store.');
     }
 
-    store.registerModule(MODULE_NAMESPACE, authStore({ baseUrl: baseUrl || '', instance: Vue }));
+    store.registerModule(MODULE_NAMESPACE, authStore({ baseUrl: baseUrl || '' }));
     
     if (!Vue.http) {
       throw new Error('Vue resource plugin is strongly required!')

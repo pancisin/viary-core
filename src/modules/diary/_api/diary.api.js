@@ -40,11 +40,20 @@ export default (baseUrl) => {
     })
   }
 
+  const postNote = (diaryId, { dateNumber, year, content }, success) => {
+    Vue.http.post(`${DIARY_API_URL}/${diaryId}/day/${dateNumber}/${year}/note`, {
+      content
+    }).then(response => {
+      success(response.body)
+    })
+  }
+
   return {
     getDiaries,
     postDiary,
     getDiary,
     getDays,
-    postDay
+    postDay,
+    postNote
   }
 }

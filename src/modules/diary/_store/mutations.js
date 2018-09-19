@@ -100,5 +100,20 @@ export default {
 
       return w
     })
+  },
+
+  [types.UPDATE_NOTE] (state, { weekNumber, dayNumber, note }) {
+    state.scopedDiaryWeeks = state.scopedDiaryWeeks.map(w => {
+      if (w.weekNumber === weekNumber) {
+        const dayIdx = w.days.findIndex(d => d.date_number === dayNumber)
+        const day = w.days[dayIdx]
+        const noteIdx = day.notes.findIndex(n => n.id === note.id)
+        
+        day.notes.splice(noteIdx, 1, note)
+        w.days.splice(dayIdx, 1, day)
+      }
+
+      return w
+    })
   }
 }

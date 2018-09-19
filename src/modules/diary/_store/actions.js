@@ -1,4 +1,5 @@
 import DiaryApi from '../_api/diary.api';
+import NoteApi from '../_api/note.api';
 import WeatherApi from '../_api/weather.api';
 import * as types from './mutation-types';
 
@@ -7,7 +8,11 @@ import { DateTime } from 'luxon';
 // import router from '@/router'
 
 export default ({ baseUrl }) => {
-  const Api = DiaryApi(baseUrl);
+  const Api = {
+    ...DiaryApi(baseUrl),
+    ...NoteApi(baseUrl)
+  } 
+
   const WeatherApiInstance = WeatherApi();
 
   const initializeDiaries = ({ commit }) => {
@@ -103,18 +108,8 @@ export default ({ baseUrl }) => {
           from: week.startOf('week').toFormat('MM/dd/yyyy'),
           to: week.endOf('week').toFormat('MM/dd/yyyy')
         }, days => {
-          const changedDays = days.map(d => { 
-            return {
-              ...d,
-              notes: [
-                {
-                  content: d.content
-                }
-              ]
-            }
-          })
           // commit(types.SET_SCOPED_DIARY_DAYS, { days });
-          commit(types.ADD_WEEK_TO_SCOPE, { weekNumber, days: changedDays });
+          commit(types.ADD_WEEK_TO_SCOPE, { weekNumber, days: days });
           resolve();
         })
       })
@@ -152,17 +147,31 @@ export default ({ baseUrl }) => {
     })
   }
 
-  const addDayNote = ({ commit, getters }, note) => {
+  const updateDayNote = ({ commit, getters }, note) => {
     const scopedDay = getters.scopedDay;
     const dayNumber = scopedDay.diff(scopedDay.startOf('year'), 'days').toObject().days
 
     return new Promise(resolve => {
-      const noteObj = {
-        content: note
-      }
+      Api.updateNote(note.id, note, result => {
+        commit(types.UPDATE_NOTE, { weekNumber: scopedDay.weekNumber, dayNumber, note: result })
+        resolve(result)
+      })
+    })
+  }
 
-      commit(types.ADD_NOTE, { note: noteObj, dayNumber, weekNumber: scopedDay.weekNumber })
-      resolve()
+  const addDayNote = ({ commit, getters }, note) => {
+    const scopedDay = getters.scopedDay;
+    const dateNumber = scopedDay.diff(scopedDay.startOf('year'), 'days').toObject().days
+
+    return new Promise(resolve => {
+      Api.postNote(getters.scopedDiary.slug, {
+        content: note,
+        dateNumber,
+        year: scopedDay.year,
+      }, result => {
+        commit(types.ADD_NOTE, { note: result, dayNumber: dateNumber, weekNumber: scopedDay.weekNumber })
+        resolve()
+      })
     })
   }
 
@@ -179,6 +188,7 @@ export default ({ baseUrl }) => {
     loadWeekWeatherData,
     updateScopedDay,
     addDayNote,
-    flushDiaries
+    flushDiaries,
+    updateDayNote
   }
 }

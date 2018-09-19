@@ -29,9 +29,7 @@ export default {
 
     return Array.from({ length: 7 }, (v, i) => i).map(i => {
       const d = scopedDay.startOf('week').plus({ days: i })
-
-      const dayNumber = d.diff(d.startOf('year'), 'days').toObject().days
-      const c = daysContent.filter(d => d.date_number === dayNumber)[0]
+      const c = daysContent.filter(dc => dc.date_number === d.ordinal)[0]
 
       const weatherData = getters.forecastData.filter(w => DateTime.fromMillis(w.dt * 1000).toSQLDate() === d.toSQLDate());
 

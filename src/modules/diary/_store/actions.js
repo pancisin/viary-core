@@ -128,49 +128,43 @@ export default ({ baseUrl }) => {
     })
   }
 
-  const updateScopedDay = ({ commit, getters }, content) => {
-    const scopedDay = getters.scopedDay;
-    const dayNumber = scopedDay.diff(scopedDay.startOf('year'), 'days').toObject().days
-
-    commit(types.SET_SAVING_DIARY, true);
-
+  const updateDayNote = ({ commit, getters }, { note, weekNumber, ordinal }) => {
     return new Promise(resolve => {
-      Api.postDay(getters.scopedDiary.slug, {
-        date_number: dayNumber,
-        year: scopedDay.year,
-        content
-      }, result => {
-        resolve()
-        commit(types.UPDATE_DAY, { weekNumber: scopedDay.weekNumber, day: result })
-        commit(types.SET_SAVING_DIARY, false);
-      })
-    })
-  }
-
-  const updateDayNote = ({ commit, getters }, note) => {
-    const scopedDay = getters.scopedDay;
-    const dayNumber = scopedDay.diff(scopedDay.startOf('year'), 'days').toObject().days
-
-    return new Promise(resolve => {
+      commit(types.SET_LOADING_DIARY, true);
       Api.updateNote(note.id, note, result => {
-        commit(types.UPDATE_NOTE, { weekNumber: scopedDay.weekNumber, dayNumber, note: result })
+        commit(types.UPDATE_NOTE, { weekNumber: weekNumber, ordinal, note: result })
+        commit(types.SET_LOADING_DIARY, false);
         resolve(result)
       })
     })
   }
 
-  const addDayNote = ({ commit, getters }, note) => {
+  const addDayNote = ({ commit, getters }, { note, weekNumber, ordinal }) => {
     const scopedDay = getters.scopedDay;
-    const dateNumber = scopedDay.diff(scopedDay.startOf('year'), 'days').toObject().days
 
     return new Promise(resolve => {
+      commit(types.SET_LOADING_DIARY, true);
       Api.postNote(getters.scopedDiary.slug, {
         content: note,
-        dateNumber,
+        ordinal: ordinal,
         year: scopedDay.year,
       }, result => {
-        commit(types.ADD_NOTE, { note: result, dayNumber: dateNumber, weekNumber: scopedDay.weekNumber })
+        commit(types.ADD_NOTE, { note: result, ordinal, weekNumber })
+        commit(types.SET_LOADING_DIARY, false);
         resolve()
+      })
+    })
+  }
+
+  const deleteDayNote = ({ commit, getters }, { noteId, weekNumber, ordinal }) => {
+    return new Promise(resolve => {
+      commit(types.SET_LOADING_DIARY, true);
+      Api.deleteNote(noteId, result => {
+        commit(types.DELETE_NOTE, { weekNumber, ordinal, noteId })
+        commit(types.SET_LOADING_DIARY, false);
+        resolve(result)
+      }, err => {
+        console.error(err)
       })
     })
   }
@@ -186,9 +180,9 @@ export default ({ baseUrl }) => {
     scopeDay,
     loadWeekData,
     loadWeekWeatherData,
-    updateScopedDay,
     addDayNote,
     flushDiaries,
-    updateDayNote
+    updateDayNote,
+    deleteDayNote
   }
 }

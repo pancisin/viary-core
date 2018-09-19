@@ -10,12 +10,13 @@
             {{ day.day }}
           </span>
           {{ day.weekdayLong }}
+          {{ day.ordinal }}
         </span>
 
         <span class="wi fsz-md float-right mT-5" :class="dayWeather(day)"></span>
       </div>
 
-      <diary-day-note v-for="(note, idx) in day.notes" :key="idx" :note="note" />
+      <diary-day-note v-for="(note, idx) in day.notes" :key="idx" :note="note" :ts="day.toMillis()" />
 
       <form class="form" @submit.prevent="submitDayNote">
         <input 
@@ -59,7 +60,11 @@ export default {
     }, 1000),
 
     submitDayNote (e) {
-      this.addDayNote(e.target[0].value).then(() => {
+      this.addDayNote({ 
+        note: e.target[0].value, 
+        weekNumber: this.day.weekNumber, 
+        ordinal: this.day.ordinal }
+      ).then(() => {
         e.target[0].value = ''
       })
     },

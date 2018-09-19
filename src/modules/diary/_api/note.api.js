@@ -8,7 +8,18 @@ export default baseUrl => {
     })
   }
 
+  const deleteNote = (noteId, success, error) => {
+    Vue.http.delete(`${NOTE_API_URL}/${noteId}`).then(response => {
+      success(response.body)
+    }).catch(err => {
+      if(error) {
+        error(err)
+      }
+    })
+  }
+
   return {
-    updateNote
+    updateNote,
+    deleteNote
   }
 };

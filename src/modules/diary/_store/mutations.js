@@ -75,10 +75,10 @@ export default {
     state.forecastData = forecast;
   },
 
-  [types.ADD_NOTE] (state, { weekNumber, dayNumber, note }) {
+  [types.ADD_NOTE] (state, { weekNumber, ordinal, note }) {
     state.scopedDiaryWeeks = state.scopedDiaryWeeks.map(w => {
       if (w.weekNumber === weekNumber) {
-        const dayIdx = w.days.findIndex(d => d.date_number === dayNumber)
+        const dayIdx = w.days.findIndex(d => d.date_number === ordinal)
         
         if (dayIdx !== -1) {
           const day = w.days[dayIdx]
@@ -91,7 +91,7 @@ export default {
           })
         } else {
           w.days.push({
-            date_number: dayNumber,
+            date_number: ordinal,
             year: 2018,
             notes: [ note ]
           })
@@ -102,14 +102,29 @@ export default {
     })
   },
 
-  [types.UPDATE_NOTE] (state, { weekNumber, dayNumber, note }) {
+  [types.UPDATE_NOTE] (state, { weekNumber, ordinal, note }) {
     state.scopedDiaryWeeks = state.scopedDiaryWeeks.map(w => {
       if (w.weekNumber === weekNumber) {
-        const dayIdx = w.days.findIndex(d => d.date_number === dayNumber)
+        const dayIdx = w.days.findIndex(d => d.date_number === ordinal)
         const day = w.days[dayIdx]
         const noteIdx = day.notes.findIndex(n => n.id === note.id)
         
         day.notes.splice(noteIdx, 1, note)
+        w.days.splice(dayIdx, 1, day)
+      }
+
+      return w
+    })
+  },
+
+  [types.DELETE_NOTE] (state, { weekNumber, ordinal, noteId }) {
+    state.scopedDiaryWeeks = state.scopedDiaryWeeks.map(w => {
+      if (w.weekNumber === weekNumber) {
+        const dayIdx = w.days.findIndex(d => d.date_number === ordinal)
+        const day = w.days[dayIdx]
+        const noteIdx = day.notes.findIndex(n => n.id === noteId)
+        
+        day.notes.splice(noteIdx, 1)
         w.days.splice(dayIdx, 1, day)
       }
 

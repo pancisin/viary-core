@@ -17,7 +17,7 @@ const AuthPlugin = {
       throw new Error('Vue resource plugin is strongly required!')
     }
     
-    Vue.http.interceptors.push(AuthInterceptor);
+    Vue.http.interceptors.push(AuthInterceptor(store));
     if (store.getters['$_auth/authenticated']) {
       store.dispatch(`${MODULE_NAMESPACE}/initializeUser`)
     }

@@ -3,12 +3,12 @@
     <diary-info class="pY-10" />
 
     <!-- <diary-transition tag="div" class="diary-week pX-10 pB-10"> -->
-      <div class="diary-week pB-10">
+      <div class="diary-week">
         <diary-day v-for="day in weekDays" :key="day.ts" :day="day" />
       </div>
     <!-- </diary-transition> -->
 
-    <diary-controls />
+    <diary-controls :theme-color="themeColor" />
   </div>
 </template>
 
@@ -23,6 +23,14 @@ import { DiaryTransition } from '@/components/transitions';
 import { Loading, ClickOutside } from '@/directives';
 
 export default {
+  props: {
+    themeColor: {
+      type: String,
+      default() {
+        return '#fff'
+      }
+    }
+  },
   components: {
     DiaryDay,
     DiaryControls,

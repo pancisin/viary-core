@@ -1,0 +1,117 @@
+// @import (reference) '~less/variables.less';
+
+$color-primary: #e00;
+$color-primary-active: #e00;
+$color-inverse: #e00;
+$color-inverse-active: #e00;
+$color-danger: #e00;
+
+.calendar {
+  position: relative;
+  font-weight: 300;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-transform: uppercase;
+
+  height: 50px;
+}
+
+table.calendar-table {
+  width: 100%;
+  table-layout: fixed;
+
+  th {
+    text-transform: uppercase;
+    padding-bottom: 10px;
+  }
+
+  td {
+    // border: 1px solid #ccc;
+    transition: background-color .3s ease;
+    position: relative;
+    
+    & > * {
+      padding: 5px;
+      display: block;
+    }
+
+    &.current {
+      background: rgba(31, 171, 137, 0.2);
+    }
+
+    &.disabled {
+      &:after {
+        content: '';
+        // background: rgba(238, 237, 237, 0.81);
+        background: rgba(0, 0, 0, 0.1);
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        position: absolute;
+      }
+    }
+
+    .monthday {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+
+    ul {
+      padding-left: 0;
+      list-style: none;
+      min-height: 50px;
+
+      li {
+        margin-bottom: 1px;
+        overflow: hidden;
+
+        a {
+          background-color: $color-primary;
+          padding: 5px 10px;
+          color: #fff;
+          font-size: 12px;
+          line-height: 17px;
+          display: block;
+          transition: background-color .3s ease;
+
+          &:hover {
+            background-color: $color-primary-active;
+          }
+
+          &.create-event {
+            text-align: center;
+            background-color: $color-inverse;
+            opacity: 0;
+            transition: opacity .5s ease, transform .2s ease, background-color .3s ease;
+            transform: translateY(-100%);
+
+            &:hover {
+              background-color: $color-inverse-active;
+            }
+          }
+        }
+
+        &.event-deactivated {
+          a {
+            background-color: $color-danger;
+          }
+        }
+      }
+    }
+
+    &:hover:not(.disabled) {
+      background-color: rgba(0, 0, 0, 0.1);
+
+      ul li a.create-event {
+        transform: translateY(0px);
+        opacity: 1;
+      }
+    }
+  }
+}

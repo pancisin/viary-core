@@ -10,7 +10,6 @@
             {{ day.day }}
           </span>
           {{ day.weekdayLong }}
-          {{ day.ordinal }}
         </span>
 
         <span class="wi fsz-md float-right mT-5" :class="dayWeather(day)"></span>

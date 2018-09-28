@@ -12,4 +12,13 @@ const guid = () => {
   return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
 }
 
-export { baseUrl, guid };
+const colorLightness = c => {
+  var c = c.substring(1);
+  var rgb = parseInt(c, 16);
+  var r = (rgb >> 16) & 0xff;
+  var g = (rgb >>  8) & 0xff;
+  var b = (rgb >>  0) & 0xff;
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+export { baseUrl, guid, colorLightness };

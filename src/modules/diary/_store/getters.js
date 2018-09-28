@@ -19,7 +19,6 @@ export default {
   forecastData: state => state.forecastData,
   weekDays: (state, getters) => {
     const scopedDay = getters.scopedDay;
-
     const week = getters.getDiaryWeek(scopedDay.weekNumber)
 
     let daysContent = []
@@ -44,5 +43,13 @@ export default {
       }
       return d;
     })
+  },
+  monthDays: (state, getters) => {
+    const scopedDay = getters.scopedDay;
+
+    const start = scopedDay.startOf('month').startOf('week')
+    const end = scopedDay.endOf('month').endOf('week')
+
+    return Array.from({ length: Math.round(end.diff(start, 'days').days) }, (v, i) => i).map(i => start.plus({ days: i }))
   }
 }

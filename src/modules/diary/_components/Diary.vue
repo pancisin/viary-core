@@ -8,7 +8,7 @@
       </div>
     <!-- </diary-transition> -->
 
-    <diary-controls :theme-color="themeColor" />
+    <diary-controls />
   </div>
 </template>
 
@@ -23,14 +23,6 @@ import { DiaryTransition } from '@/components/transitions';
 import { Loading, ClickOutside } from '@/directives';
 
 export default {
-  props: {
-    themeColor: {
-      type: String,
-      default() {
-        return '#fff'
-      }
-    }
-  },
   components: {
     DiaryDay,
     DiaryControls,

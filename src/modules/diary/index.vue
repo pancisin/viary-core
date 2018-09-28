@@ -7,7 +7,12 @@
 
       <calendar />
 
-      <a class="position-relative c-white fw-300" :href="theme.unsplashUrl">Photo by {{ theme.author }} at unsplash.com</a>
+      <a 
+        class="position-relative c-white fw-300" 
+        :href="theme.unsplashUrl"
+        target="_blank">
+        Photo by {{ theme.author }} at unsplash.com
+      </a>
     </div>
     <div class="col-lg-9">
       <diary :theme-color="theme.color" />

@@ -31,27 +31,20 @@ import { DateTime } from 'luxon';
 import { colorLightness } from '@/utils';
 
 export default {
-  props: {
-    themeColor: {
-      type: String,
-      default() {
-        return '#fff'
-      }
-    }
-  },
   data () {
     return {
       lightTheme: false
     }
   },
   watch: {
-    themeColor (newVal) {
-      this.$el.style.background = newVal
-      this.lightTheme = colorLightness(newVal) > 150;
+    theme (newVal) {
+      this.$el.style.background = newVal.color
+      this.lightTheme = colorLightness(newVal.color) > 150;
     }
   },
   computed: {
     ...mapGetters('$_diary', ['scopedDay']),
+    ...mapGetters('$_settings', ['theme']),
     themeClass () {
       return this.lightTheme ? 'dark' : 'light'
     } 

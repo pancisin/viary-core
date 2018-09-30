@@ -21,7 +21,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(week, row) in monthWeeks" :key="row">
+        <tr v-for="(week, row) in monthWeeks" :key="row" :style="weekRowStyle(week)">
           <td v-for="(day, column) in week" 
             :key="column" 
             :class="{ 
@@ -43,23 +43,9 @@
 import { DateTime, Info } from 'luxon'
 import { mapGetters, mapActions } from 'vuex'
 export default {
-  props: {
-    events: {
-      type: Array,
-      default () {
-        return [];
-      }
-    },
-    editable: Boolean
-  },
-  data: function () {
-    return {
-      weeks: [],
-      focusDate: {}
-    };
-  },
   computed: {
     ...mapGetters('$_diary', ['monthDays', 'scopedDay']),
+    ...mapGetters('$_settings', ['theme']),
     weekdays () {
       return Info.weekdays('short');
     },
@@ -84,7 +70,17 @@ export default {
     },
     selectDate (day) {
       this.$emit('selectDate', day.timestamp);
-    } 
+    },
+    weekRowStyle (week) {
+      let weekNumber = -1;
+      if (week != null && week.length > 0) {
+        weekNumber = week[0].weekNumber;
+      }
+
+      return {
+        border: this.scopedDay.weekNumber === weekNumber ? `1px solid rgba(255, 255, 255, 0.5)` : '0px solid transparent'
+      }
+    }
   }
 };
 </script>

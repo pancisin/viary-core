@@ -58,7 +58,21 @@
     <modal :show.sync="displayDiaryOptionsModal">
       <span slot="header">Edit diary</span>
       <div slot="body">
-        <diary-editor :diary="scopedDiary" /> 
+        <diary-editor :diary="scopedDiary" />
+
+        <h4>Appearance</h4>
+
+        <div class="d-flex flex-row flex-wrap">
+          <a 
+            v-for="(theme, idx) in themes" 
+            :key="idx" 
+            style="flex: 0 0 25%"
+            class="img-thumbnail"
+            @click="selectTheme(theme.id)">
+
+            <img :src="theme.imageUrl" class="w-100p h-100p">
+          </a>
+        </div>
       </div>
     </modal>
   </div>
@@ -90,6 +104,7 @@ export default {
   computed: {
     ...mapGetters('$_diary', ['scopedDay', 'scopedDiary']),
     ...mapGetters('$_auth', ['user']),
+    ...mapGetters('$_settings', ['themes']),
     profilePic () {
       return ""
       // return gravatar.url(this.user.email)
@@ -97,6 +112,7 @@ export default {
   },
   methods: {
     ...mapActions('$_auth', ['logout']),
+    ...mapActions('$_settings', ['selectTheme']),
     logoutNow() {
       this.logout().then(() => {
         this.$store.dispatch('$_diary/flushDiaries')

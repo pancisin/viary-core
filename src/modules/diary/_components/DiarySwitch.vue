@@ -1,8 +1,16 @@
 <template>
   <div>
     <div class="form-group">
-      <select class="form-control" v-model="selectedDiary" @change="diarySelectChagne">
-        <option v-for="(diary, index) in diaries" :key="index" :value="diary.slug">
+      <select 
+        class="form-control" 
+        v-model="selectedDiary"
+        @change="diarySelectChagne">
+
+        <option 
+          v-for="(diary, index) in diaries" 
+          :key="index" 
+          :value="diary.slug">
+
           {{ diary.name }}
         </option>
         <option :value="createOptionValue">
@@ -40,7 +48,11 @@ export default {
     this.createOptionValue = guid();
   },
   mounted () {
-    this.selectedDiary = this.scopedDiary.slug
+    this.$watch('scopedDiary', newVal => {
+      this.selectedDiary = newVal.slug
+    }, {
+      immediate: true
+    })
   },
   methods: {
     ...mapActions('$_diary', ['scopeDiary']),

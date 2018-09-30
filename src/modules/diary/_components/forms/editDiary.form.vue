@@ -21,7 +21,7 @@
 </template>
 
 <script>
-// import { mapActions } from 'vuex';
+import { mapActions } from 'vuex';
 export default {
   props: {
     diary: {
@@ -34,9 +34,15 @@ export default {
       diaryCp: { ...this.diary }
     }
   },
+  watch: {
+    diary (newVal) {
+      this.diaryCp = { ...newVal }
+    }
+  },
   methods: {
-    // ...mapActions(['createDiary']),
+    ...mapActions('$_diary', ['updateDiary']),
     submit () {
+      this.updateDiary(this.diaryCp)
       // this.createDiary(this.diary).then(() => {
       //   this.$router.push({ name: 'diary' })
       // })

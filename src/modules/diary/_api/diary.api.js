@@ -15,6 +15,12 @@ export default (baseUrl) => {
     })
   }
 
+  const putDiary = (diaryId, diary, success) => {
+    Vue.http.put(`${DIARY_API_URL}/${diaryId}`, diary).then(response => {
+      success(response.body);
+    })
+  }
+
   const getDiary = (diaryId, success) => {
     Vue.http.get(`${DIARY_API_URL}/${diaryId}`).then(response => {
       success(response.body);
@@ -43,6 +49,7 @@ export default (baseUrl) => {
   return {
     getDiaries,
     postDiary,
+    putDiary,
     getDiary,
     getDays,
     postNote

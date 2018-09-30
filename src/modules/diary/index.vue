@@ -2,8 +2,7 @@
   <div class="row">
     <div 
       class="col-lg-3 d-none d-lg-flex jc-sb ai-fs pB-10 flex-column calendar-column c-white"
-      ref="calendarColumn"
-      data-content="test">
+      ref="calendarColumn">
 
       <calendar />
 
@@ -60,14 +59,16 @@ export default {
 
     this.$store.registerModule('$_settings', SettingsModule({ baseUrl: this.baseUrl }));
     this.$store.dispatch('$_settings/initializeApplication').then(() => {
-      const el = this.$refs.calendarColumn;
-      el.style.background = `url(${this.theme.imageUrl})`
+      this.$watch('theme', newVal => {
+        const el = this.$refs.calendarColumn;
+        el.style.background = `url(${newVal.imageUrl})`
+      }, {
+        immediate: true
+      })
     })
 
     // UnsplashApi().getImage('sgpLdF0aSno', image => {
     // UnsplashApi().getImageOfDay(image => {
-    //   this.themeColor = image.color;
-    //   const el = this.$refs.calendarColumn;
     //   el.style.background = `url(${image.urls.regular})`
     // })
   },

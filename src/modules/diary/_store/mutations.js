@@ -11,6 +11,12 @@ export default {
     state.diaries.push(diary);
   },
 
+  [types.UPDATE_DIARY] (state, { diary }) {
+    state.scopedDiary = diary;
+    const diaryIdx = state.diaries.findIndex(d => d.slug === diary.slug)
+    state.diaries.splice(diaryIdx, 1, diary)    
+  },
+
   [types.SCOPE_DIARY] (state, { diary }) {
     state.scopedDiary = diary;
   },

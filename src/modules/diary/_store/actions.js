@@ -44,6 +44,16 @@ export default ({ baseUrl }) => {
     })
   }
 
+  const updateDiary = ({ commit }, diary) => {
+    commit(types.SET_LOADING_DIARY, true);
+    return new Promise((resolve, reject) => {
+      Api.putDiary(diary.slug, diary, result => {
+        commit(types.UPDATE_DIARY, { diary: result })
+        commit(types.SET_LOADING_DIARY, false);
+      })
+    })
+  }
+
   const scopeDiary = ({ commit, getters, dispatch }, { slug, scopeDate }) => {
     return new Promise((resolve, reject) => {
 
@@ -176,6 +186,7 @@ export default ({ baseUrl }) => {
   return {
     initializeDiaries,
     createDiary,
+    updateDiary,
     scopeDiary,
     scopeDay,
     loadWeekData,

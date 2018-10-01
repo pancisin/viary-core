@@ -21,13 +21,14 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(week, row) in monthWeeks" :key="row" :style="weekRowStyle(week)">
+        <tr v-for="(week, row) in monthWeeks" 
+          :key="row" 
+          :class="{ 'calendar-week-active' : weekRowActive(week) }">
+
           <td v-for="(day, column) in week" 
-            :key="column" 
-            :class="{ 
-              'current' : scopedDay.ts == day.ts, 
-              'disabled' : day.month != scopedDay.month
-            }">
+            :key="column"
+            :style="dayCellClass(day)"
+            :class="{ 'disabled' : day.month != scopedDay.month }">
 
             <a @click="scopeDay({ day })"> 
               {{ day.day }}
@@ -71,14 +72,14 @@ export default {
     selectDate (day) {
       this.$emit('selectDate', day.timestamp);
     },
-    weekRowStyle (week) {
-      let weekNumber = -1;
-      if (week != null && week.length > 0) {
-        weekNumber = week[0].weekNumber;
-      }
-
-      return {
-        border: this.scopedDay.weekNumber === weekNumber ? `1px solid rgba(255, 255, 255, 0.5)` : '0px solid transparent'
+    weekRowActive (week) {
+      return week != null && week.length > 0 && week[0].weekNumber === this.scopedDay.weekNumber;
+    },
+    dayCellClass (day) {
+      if (DateTime.local().startOf('day').ts === day.ts) {
+        return {
+          'background-color': this.theme.color
+        }
       }
     }
   }

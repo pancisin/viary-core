@@ -6,6 +6,8 @@ $color-inverse: #e00;
 $color-inverse-active: #e00;
 $color-danger: #e00;
 
+$border-active: 1px solid rgba(255, 255, 255, 0.5);
+
 .calendar {
   position: relative;
   font-weight: 300;
@@ -23,6 +25,18 @@ $color-danger: #e00;
 table.calendar-table {
   width: 100%;
   table-layout: fixed;
+
+  tbody {
+    tr {
+      // border: 1px solid transparent;
+      // transition: border 0.5s ease;
+
+      &.calendar-week-active, 
+      &:hover {
+        border: $border-active;
+      }
+    }
+  }
 
   th {
     text-transform: uppercase;
@@ -54,64 +68,6 @@ table.calendar-table {
         width: 100%;
         position: absolute;
         pointer-events: none;
-      }
-    }
-
-    .monthday {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-    }
-
-    ul {
-      padding-left: 0;
-      list-style: none;
-      min-height: 50px;
-
-      li {
-        margin-bottom: 1px;
-        overflow: hidden;
-
-        a {
-          background-color: $color-primary;
-          padding: 5px 10px;
-          color: #fff;
-          font-size: 12px;
-          line-height: 17px;
-          display: block;
-          transition: background-color .3s ease;
-
-          &:hover {
-            background-color: $color-primary-active;
-          }
-
-          &.create-event {
-            text-align: center;
-            background-color: $color-inverse;
-            opacity: 0;
-            transition: opacity .5s ease, transform .2s ease, background-color .3s ease;
-            transform: translateY(-100%);
-
-            &:hover {
-              background-color: $color-inverse-active;
-            }
-          }
-        }
-
-        &.event-deactivated {
-          a {
-            background-color: $color-danger;
-          }
-        }
-      }
-    }
-
-    &:hover:not(.disabled) {
-      background-color: rgba(0, 0, 0, 0.1);
-
-      ul li a.create-event {
-        transform: translateY(0px);
-        opacity: 1;
       }
     }
   }

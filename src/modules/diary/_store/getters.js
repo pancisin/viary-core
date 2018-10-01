@@ -17,7 +17,7 @@ export default {
   loadingDiary: state => state.loadingDiaryInProgress || state.savingDiaryInProgress,
   savingDiary: state => state.savingDiary,
   forecastData: state => state.forecastData,
-  weekDays: (state, getters) => {
+  weekDays: (state, getters) => count => {
     const scopedDay = getters.scopedDay;
     const week = getters.getDiaryWeek(scopedDay.weekNumber)
 
@@ -26,7 +26,7 @@ export default {
       daysContent = week.days
     }
 
-    return Array.from({ length: 7 }, (v, i) => i).map(i => {
+    return Array.from({ length: count || 7 }, (v, i) => i).map(i => {
       const d = scopedDay.startOf('week').plus({ days: i })
       const c = daysContent.filter(dc => dc.date_number === d.ordinal)[0]
 

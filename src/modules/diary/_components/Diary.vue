@@ -4,7 +4,7 @@
 
     <!-- <diary-transition tag="div" class="diary-week pX-10 pB-10"> -->
       <div class="diary-week">
-        <diary-day v-for="day in weekDays" :key="day.ts" :day="day" />
+        <diary-day v-for="day in weekDays(7)" :key="day.ts" :day="day" />
       </div>
     <!-- </diary-transition> -->
 

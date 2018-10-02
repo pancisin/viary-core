@@ -1,10 +1,12 @@
 <template>
   <div class="row">
     <div 
-      class="col-lg-3 d-none d-lg-flex jc-sb ai-fs pB-10 flex-column calendar-column c-white"
+      class="col-lg-3 d-none d-lg-flex jc-sb ai-fs pB-10 flex-column calendar-column c-white h-100vh"
       ref="calendarColumn">
 
       <calendar />
+
+      <!-- <img src="./_assets/img/viary_logo_1000_rounded.png" style="width:100%"> -->
 
       <a 
         class="position-relative c-white fw-300" 

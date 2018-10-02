@@ -46,6 +46,14 @@
 <script>
 import { mapActions } from 'vuex'
 export default {
+  props: {
+    success: {
+      type: Function,
+      default () {
+        return () => {}
+      }
+    }
+  },
   data () {
     return {
       user: {
@@ -60,7 +68,7 @@ export default {
     ...mapActions('$_auth', ['register']),
     submit () {
       this.register(this.user).then(() => {
-        this.$router.replace({ name: 'home' });
+        this.success();
       })
     }
   }

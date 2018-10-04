@@ -15,7 +15,11 @@
         <span class="wi fsz-md float-right mT-5" :class="dayWeather(day)"></span>
       </div>
 
-      <diary-day-note v-for="(note, idx) in day.notes" :key="idx" :note="note" :ts="day.toMillis()" />
+      <diary-day-note 
+        v-for="(note, idx) in day.notes" 
+        :key="idx" 
+        :note="note" 
+        :ts="day.toMillis()" />
 
       <form class="form" @submit.prevent="submitDayNote">
         <input 

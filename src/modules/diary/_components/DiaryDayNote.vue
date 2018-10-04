@@ -17,9 +17,11 @@
       </div>
     </div>
 
-    <div v-else @click="editNote" class="diary-day-note-content">
-      <!-- <span class="diary-day-note-delimiter">-</span> -->
-      {{ note.content }}
+    <div v-else @click="editNote">
+      <span class="diary-note-time">{{ noteParsed.time }}</span>
+      <span class="diary-day-note-content">
+        {{ noteParsed.content }}
+      </span>
     </div>
   </div>
 </template>
@@ -52,6 +54,21 @@ export default {
   watch: {
     note (newVal) {
       this.noteCp = { ...newVal }
+    }
+  },
+  computed: {
+    noteParsed () {
+      const res = this.noteCp.content.match(/([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9](PM|AM)?/)
+      if (res != null) {
+        return {
+          time: res[0],
+          content: res.index === 0 ? this.noteCp.content.replace(res[0], '') : this.noteCp.content
+        }
+      }
+
+      return {
+        content: this.noteCp.content
+      }
     }
   },
   methods: {

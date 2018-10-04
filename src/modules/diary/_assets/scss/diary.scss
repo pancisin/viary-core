@@ -112,6 +112,11 @@ $bg-gradient: linear-gradient(to right bottom, #e96443, #904e95);
           &:before {
             content: ' - '
           }
+
+          .diary-note-time {
+            // border: 1px solid #ccc;
+            padding: 1px 10px;
+          }
         }
       
         &:hover { 

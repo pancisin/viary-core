@@ -53,7 +53,7 @@ export default ({ baseUrl }) => {
 
       commit(types.SET_USER, { user: null });
 
-      // dispatch('flushDiaries');
+      // dispatch('flushDiaries');d
       resolve();
       // dispatch('resetModelModule');
       // dispatch('resetApiModule');

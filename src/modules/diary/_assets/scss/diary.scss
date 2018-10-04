@@ -4,9 +4,12 @@ $darken-amount: 2;
 $bg-gradient: linear-gradient(to right bottom, #e96443, #904e95);
 
 .diary {
-  // background-color: #fff;
-  height: calc(100vh - 61px);
+  height: calc(100vh - 55px);
   background: #ffffffd9;
+
+  @media screen and (min-width: 992px) {
+    height: 100vh;
+  }
 
   .diary-controls {
     position: fixed;
@@ -18,28 +21,46 @@ $bg-gradient: linear-gradient(to right bottom, #e96443, #904e95);
     // border-top: $diary-border;
     // box-shadow: 0px 15px 20px 14px rgba(70, 70, 70, 0.44);
     background: $bg-gradient;
+    height: 55px;
+
+    @media screen and (min-width: 992px) {
+      display: none;
+    }
   }
 
   .diary-info {
-    // text-transform: capitalize;
+    height: 50px;
   }
 
   .diary-week {
     display: flex;
     flex-wrap: wrap;
-    margin-bottom: 60px;
+    height: calc(100% - 55px);
+    overflow-y: auto;
+    padding-bottom: 10px;
+
+    &::-webkit-scrollbar {
+      width: 0px !important;
+    } 
 
     @media screen and (max-width: 480px) {
       flex-direction: column;
+      // height: auto;
+      flex-wrap: nowrap;
+      margin-bottom: 55px;
     }
 
     .diary-day {
       border-right: $diary-border;
       border-top: $diary-border;
-      flex: 35vw 1 0;
-      min-height: 21vh;
+      flex: 50% 1 0;
+      // min-height: 21vh;
       padding: 5px 10px;
       transition: background-color 0.1s ease-in-out;
+
+      @media screen and (max-width: 480px) {
+        flex: 25% 1 0;
+      }
 
       .diary-day-header {
         pointer-events: none;
@@ -82,7 +103,24 @@ $bg-gradient: linear-gradient(to right bottom, #e96443, #904e95);
         width: 100%;
         background: none !important;
         cursor: default;
-        margin-top: 5px;
+      }
+
+      .diary-day-note {
+        border-bottom: 1px solid transparent;
+      
+        .diary-day-note-content {
+          &:before {
+            content: ' - '
+          }
+        }
+      
+        &:hover { 
+          border-bottom: 1px solid #ddd;
+      
+          .diary-day-note-controls {
+            display: block;
+          }
+        }
       }
     }
   }

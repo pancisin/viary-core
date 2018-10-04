@@ -11,6 +11,12 @@ export default {
     state.diaries.push(diary);
   },
 
+  [types.UPDATE_DIARY] (state, { diary }) {
+    state.scopedDiary = diary;
+    const diaryIdx = state.diaries.findIndex(d => d.slug === diary.slug)
+    state.diaries.splice(diaryIdx, 1, diary)    
+  },
+
   [types.SCOPE_DIARY] (state, { diary }) {
     state.scopedDiary = diary;
   },
@@ -73,5 +79,62 @@ export default {
 
   [types.SET_FORECAST_DATA] (state, forecast) {
     state.forecastData = forecast;
+  },
+
+  [types.ADD_NOTE] (state, { weekNumber, ordinal, note }) {
+    state.scopedDiaryWeeks = state.scopedDiaryWeeks.map(w => {
+      if (w.weekNumber === weekNumber) {
+        const dayIdx = w.days.findIndex(d => d.date_number === ordinal)
+        
+        if (dayIdx !== -1) {
+          const day = w.days[dayIdx]
+          w.days.splice(dayIdx, 1, {
+            ...day,
+            notes: [
+              ...day.notes,
+              note
+            ]
+          })
+        } else {
+          w.days.push({
+            date_number: ordinal,
+            year: 2018,
+            notes: [ note ]
+          })
+        }
+      }
+
+      return w
+    })
+  },
+
+  [types.UPDATE_NOTE] (state, { weekNumber, ordinal, note }) {
+    state.scopedDiaryWeeks = state.scopedDiaryWeeks.map(w => {
+      if (w.weekNumber === weekNumber) {
+        const dayIdx = w.days.findIndex(d => d.date_number === ordinal)
+        const day = w.days[dayIdx]
+        const noteIdx = day.notes.findIndex(n => n.id === note.id)
+        
+        day.notes.splice(noteIdx, 1, note)
+        w.days.splice(dayIdx, 1, day)
+      }
+
+      return w
+    })
+  },
+
+  [types.DELETE_NOTE] (state, { weekNumber, ordinal, noteId }) {
+    state.scopedDiaryWeeks = state.scopedDiaryWeeks.map(w => {
+      if (w.weekNumber === weekNumber) {
+        const dayIdx = w.days.findIndex(d => d.date_number === ordinal)
+        const day = w.days[dayIdx]
+        const noteIdx = day.notes.findIndex(n => n.id === noteId)
+        
+        day.notes.splice(noteIdx, 1)
+        w.days.splice(dayIdx, 1, day)
+      }
+
+      return w
+    })
   }
 }

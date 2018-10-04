@@ -15,6 +15,12 @@ export default (baseUrl) => {
     })
   }
 
+  const putDiary = (diaryId, diary, success) => {
+    Vue.http.put(`${DIARY_API_URL}/${diaryId}`, diary).then(response => {
+      success(response.body);
+    })
+  }
+
   const getDiary = (diaryId, success) => {
     Vue.http.get(`${DIARY_API_URL}/${diaryId}`).then(response => {
       success(response.body);
@@ -32,8 +38,8 @@ export default (baseUrl) => {
     })
   }
 
-  const postDay = (diaryId, { date_number, year, content }, success) => {
-    Vue.http.post(`${DIARY_API_URL}/${diaryId}/day/${date_number}/${year}`, {
+  const postNote = (diaryId, { ordinal, year, content }, success) => {
+    Vue.http.post(`${DIARY_API_URL}/${diaryId}/day/${ordinal}/${year}/note`, {
       content
     }).then(response => {
       success(response.body)
@@ -43,8 +49,9 @@ export default (baseUrl) => {
   return {
     getDiaries,
     postDiary,
+    putDiary,
     getDiary,
     getDays,
-    postDay
+    postNote
   }
 }

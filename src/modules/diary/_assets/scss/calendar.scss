@@ -1,0 +1,74 @@
+// @import (reference) '~less/variables.less';
+
+$color-primary: #e00;
+$color-primary-active: #e00;
+$color-inverse: #e00;
+$color-inverse-active: #e00;
+$color-danger: #e00;
+
+$border-active: 1px solid rgba(255, 255, 255, 0.5);
+
+.calendar {
+  position: relative;
+  font-weight: 300;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-transform: uppercase;
+
+  height: 50px;
+}
+
+table.calendar-table {
+  width: 100%;
+  table-layout: fixed;
+
+  tbody {
+    tr {
+      // border: 1px solid transparent;
+      // transition: border 0.5s ease;
+
+      &.calendar-week-active, 
+      &:hover {
+        border: $border-active;
+      }
+    }
+  }
+
+  th {
+    text-transform: uppercase;
+    padding-bottom: 10px;
+  }
+
+  td {
+    // border: 1px solid #ccc;
+    transition: background-color .3s ease;
+    position: relative;
+    
+    & > * {
+      padding: 5px;
+      display: block;
+    }
+
+    &.current {
+      background: rgba(31, 171, 137, 0.2);
+    }
+
+    &.disabled {
+      &:after {
+        content: '';
+        // background: rgba(238, 237, 237, 0.81);
+        background: rgba(0, 0, 0, 0.1);
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        position: absolute;
+        pointer-events: none;
+      }
+    }
+  }
+}

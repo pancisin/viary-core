@@ -17,9 +17,8 @@ export default {
   loadingDiary: state => state.loadingDiaryInProgress || state.savingDiaryInProgress,
   savingDiary: state => state.savingDiary,
   forecastData: state => state.forecastData,
-  weekDays: (state, getters) => {
+  weekDays: (state, getters) => count => {
     const scopedDay = getters.scopedDay;
-
     const week = getters.getDiaryWeek(scopedDay.weekNumber)
 
     let daysContent = []
@@ -27,19 +26,30 @@ export default {
       daysContent = week.days
     }
 
-    return Array.from({ length: 7 }, (v, i) => i).map(i => {
+    return Array.from({ length: count || 7 }, (v, i) => i).map(i => {
       const d = scopedDay.startOf('week').plus({ days: i })
-
-      const dayNumber = d.diff(d.startOf('year'), 'days').toObject().days
-      const c = daysContent.filter(d => d.date_number === dayNumber)[0]
+      const c = daysContent.filter(dc => dc.date_number === d.ordinal)[0]
 
       const weatherData = getters.forecastData.filter(w => DateTime.fromMillis(w.dt * 1000).toSQLDate() === d.toSQLDate());
 
-      Object.assign(d, { content: '', weatherData })
+      Object.assign(d, { 
+        // content: '', 
+        weatherData,
+        notes: []
+      })
       if (c != null) {
-        d.content = c.content;
+        // d.content = c.content;
+        d.notes = c.notes
       }
       return d;
     })
+  },
+  monthDays: (state, getters) => {
+    const scopedDay = getters.scopedDay;
+
+    const start = scopedDay.startOf('month').startOf('week')
+    const end = scopedDay.endOf('month').endOf('week')
+
+    return Array.from({ length: Math.round(end.diff(start, 'days').days) }, (v, i) => i).map(i => start.plus({ days: i }))
   }
 }

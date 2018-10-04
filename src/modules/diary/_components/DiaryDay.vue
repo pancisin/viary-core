@@ -15,12 +15,14 @@
         <span class="wi fsz-md float-right mT-5" :class="dayWeather(day)"></span>
       </div>
 
-      <textarea 
-        rows="3" 
-        class="diary-day-content flex-grow-1 text-secondary" 
-        v-model="day.content" 
-        @input="dayUpdate">
-      </textarea>
+      <diary-day-note v-for="(note, idx) in day.notes" :key="idx" :note="note" :ts="day.toMillis()" />
+
+      <form class="form" @submit.prevent="submitDayNote">
+        <input 
+          class="diary-day-content flex-grow-1 text-secondary" >
+          <!-- v-model="day.content"  -->
+          <!-- @input="dayUpdate"> -->
+      </form>
     </div>
 </template>
 
@@ -29,8 +31,12 @@ import debounce from 'debounce';
 import { DateTime } from 'luxon';
 import { mapGetters, mapActions } from 'vuex';
 import { WeatherIconsMap } from '@/maps';
+import DiaryDayNote from './DiaryDayNote';
 
 export default {
+  components: {
+    DiaryDayNote
+  },
   props: {
     day: {
       type: Object,
@@ -43,18 +49,24 @@ export default {
     ...mapGetters('$_diary', ['scopedDay']),
     DateTime() {
       return DateTime;
-    },
-    weather () {
-      const opts = ['cloud', 'sun', 'drop']
-      return opts[Math.floor(Math.random() * opts.length)];
     }
   },
   methods: {
-    ...mapActions('$_diary', ['scopeDay', 'updateScopedDay']),
+    ...mapActions('$_diary', ['scopeDay', 'updateScopedDay', 'addDayNote']),
 
     dayUpdate: debounce(function(e) {
       this.updateScopedDay(e.target.value)
     }, 1000),
+
+    submitDayNote (e) {
+      this.addDayNote({ 
+        note: e.target[0].value, 
+        weekNumber: this.day.weekNumber, 
+        ordinal: this.day.ordinal }
+      ).then(() => {
+        e.target[0].value = ''
+      })
+    },
 
     focusDayContent (day, e) {
       this.scopeDay({ day });

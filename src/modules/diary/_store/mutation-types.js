@@ -8,5 +8,10 @@ export const SCOPE_DAY = 'SCOPE_DAY';
 export const SET_LOADING_DIARY = 'SET_LOADING_DIARY';
 export const SET_SAVING_DIARY = 'SET_SAVING_DIARY';
 export const ADD_DIARY = 'ADD_DIARY';
+export const UPDATE_DIARY = 'UPDATE_DIARY';
 export const FLUSH_DIARY_MODULE_STATE = 'FLUSH_DIARY_MODULE_STATE';
 export const SET_FORECAST_DATA = 'SET_FORECAST_DATA';
+
+export const ADD_NOTE = 'ADD_NOTE';
+export const UPDATE_NOTE = 'UPDATE_NOTE';
+export const DELETE_NOTE = 'DELETE_NOTE';

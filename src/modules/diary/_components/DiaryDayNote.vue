@@ -91,14 +91,24 @@ export default {
     finishEditing () {
       if (!this.deletingInProgress) {
         const date = DateTime.fromMillis(this.ts)
-        this.updateDayNote({ note: this.noteCp, weekNumber: date.weekNumber, ordinal: date.ordinal })
+        this.updateDayNote({ 
+          note: this.noteCp, 
+          weekNumber: date.weekNumber, 
+          ordinal: date.ordinal, 
+          year: date.year 
+        })
         this.editMode = false;
       }
     },
     deleteNote () {
       this.deletingInProgress = true;
       const date = DateTime.fromMillis(this.ts)
-      this.deleteDayNote({ noteId: this.noteCp.id, weekNumber: date.weekNumber, ordinal: date.ordinal }).then(() => {
+      this.deleteDayNote({ 
+        noteId: this.noteCp.id, 
+        weekNumber: date.weekNumber, 
+        year: date.year, 
+        ordinal: date.ordinal 
+      }).then(() => {
         this.editMode = false;
       })
     }

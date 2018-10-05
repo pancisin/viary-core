@@ -6,13 +6,15 @@ import VueResource from 'vue-resource'
 
 Vue.config.productionTip = false
 
+const BASE_URL = 'http://localhost:8180';
+
 Vue.use(WebSocketPlugin, {
-  baseUrl: 'http://localhost:8180'
+  baseUrl: BASE_URL
 })
 Vue.use(VueResource)
 Vue.use(AuthPlugin, {
   store,
-  baseUrl: 'http://diary.convene.sk'
+  baseUrl: BASE_URL
 })
 
 new Vue({

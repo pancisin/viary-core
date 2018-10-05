@@ -2,7 +2,7 @@
   <div id="app">
     <div class="container">
       <auth-wrapper>
-        <diary-module baseUrl="http://diary.convene.sk" />
+        <diary-module baseUrl="http://localhost:8180" />
       </auth-wrapper>
     </div>
   </div>

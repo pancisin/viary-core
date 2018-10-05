@@ -5,14 +5,13 @@ export default {
   diaries: state => state.diaries,
   scopedDiary: state => state.scopedDiary,
   scopedDiaryDays: state => state.scopedDiaryDays,
-  getDiaryWeek: state => weekNumber => {
-    const idx = state.scopedDiaryWeeks.findIndex(w => w.weekNumber === weekNumber)
-
-    if (idx != -1) {
-      return state.scopedDiaryWeeks[idx]
+  getDiaryWeek: state => (weekNumber, year) => {
+    const y = state.scopedDiaryWeeks[year]
+    if (y != null) {
+      return y[weekNumber] || []
     }
 
-    return null
+    return []
   },
   scopedDay: state => DateTime.fromSQL(state.scopedDay),
   loadingDiary: state => state.loadingDiaryInProgress || state.savingDiaryInProgress,
@@ -20,12 +19,7 @@ export default {
   forecastData: state => state.forecastData,
   weekDays: (state, getters) => count => {
     const scopedDay = getters.scopedDay;
-    const week = getters.getDiaryWeek(scopedDay.weekNumber)
-
-    let daysContent = []
-    if (week != null) {
-      daysContent = week.days
-    }
+    const daysContent = getters.getDiaryWeek(scopedDay.weekNumber, scopedDay.year)
 
     return Array.from({ length: count || 7 }, (v, i) => i).map(i => {
       const d = scopedDay.startOf('week').plus({ days: i })

@@ -80,7 +80,8 @@ export default {
       this.addDayNote({ 
         note: e.target[0].value, 
         weekNumber: this.day.weekNumber, 
-        ordinal: this.day.ordinal }
+        ordinal: this.day.ordinal,
+        year: this.day.year }
       ).then(() => {
         e.target[0].value = ''
       })

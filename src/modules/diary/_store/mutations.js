@@ -8,13 +8,16 @@ export default {
   },
 
   [types.ADD_DIARY] (state, { diary }) {
-    state.diaries.push(diary);
+    state.diaries = [ ...state.diaries, diary ]
   },
 
   [types.UPDATE_DIARY] (state, { diary }) {
     state.scopedDiary = diary;
-    const diaryIdx = state.diaries.findIndex(d => d.slug === diary.slug)
-    state.diaries.splice(diaryIdx, 1, diary)    
+    const diaryIdx = state.diaries.findIndex(d => d.slug === diary.slug);
+
+    const diaries = [ ...state.diaries ]
+    diaries.splice(diaryIdx, 1, diary)    
+    state.diaries = diaries
   },
 
   [types.SCOPE_DIARY] (state, { diary }) {
@@ -25,34 +28,27 @@ export default {
     state.scopedDiaryDays = days;
   },
 
-  [types.ADD_WEEK_TO_SCOPE] (state, { weekNumber, days }) {
-    const idx = state.scopedDiaryWeeks.findIndex(w => w.weekNumber === weekNumber)
-
-    if (idx != -1) {
-      state.scopedDiaryWeeks.splice(idx, 1, {
-        weekNumber,
-        days: [ ...days]
-      })
-    } else {
-      state.scopedDiaryWeeks.push({
-        weekNumber,
-        days: [ ...days]
-      })
+  [types.ADD_WEEK_TO_SCOPE] (state, { weekNumber, year, days }) {
+    state.scopedDiaryWeeks = {
+      ...state.scopedDiaryWeeks,
+      [ year ]: {
+        ...state.scopedDiaryWeeks[year],
+        [ weekNumber ]: [ ...days ]
+      }
     }
   },
 
-  [types.UPDATE_DAY] (state, { weekNumber, day }) {
-    // const weekIdx = state.scopedDiaryWeeks.findIndex(w => w.weekNumber === weekNumber)
-    // const week = state.scopedDiaryWeeks[weekIdx]
-
-    state.scopedDiaryWeeks = state.scopedDiaryWeeks.map(w => {
-      if (w.weekNumber === weekNumber) {
-        const dayIdx = w.days.findIndex(d => d.date_number === day.date_number)
-        w.days.splice(dayIdx, 1, day)
+  // not used
+  [types.UPDATE_DAY] (state, { weekNumber, year, day }) {
+    state.scopedDiaryWeeks = {
+      ...state.scopedDiaryWeeks,
+      [ year ]: {
+        ...state.scopedDiaryWeeks[year],
+        [ weekNumber ]: state.scopedDiaryWeeks[year][weekNumber].map(d => {
+          return d.date_number === day.date_number ? day : d
+        })
       }
-
-      return w
-    })
+    }
   },
 
   [types.SCOPE_DAY] (state, { day }) {
@@ -81,66 +77,76 @@ export default {
     state.forecastData = forecast;
   },
 
-  [types.ADD_NOTE] (state, { weekNumber, ordinal, note, force }) {
-    state.scopedDiaryWeeks = state.scopedDiaryWeeks.map(w => {
-      if (w.weekNumber === weekNumber) {
-        const dayIdx = w.days.findIndex(d => d.date_number === ordinal)
-        
-        if (dayIdx !== -1) {
-          const day = w.days[dayIdx]
-          const noteIdx = day.notes.findIndex(n => n.id === note.id)
-          if (noteIdx === -1) {
-            w.days.splice(dayIdx, 1, {
-              ...day,
-              notes: [
-                ...day.notes,
-                note
-              ]
-            })
-          } else if (force === true) {
-            day.notes.splice(noteIdx, 1, note)
-            w.days.splice(dayIdx, 1, day)
+  [types.ADD_NOTE] (state, { weekNumber, ordinal, year, note, force }) {
+    state.scopedDiaryWeeks = {
+      ...state.scopedDiaryWeeks,
+      [ year ]: {
+        ...state.scopedDiaryWeeks[year],
+        [ weekNumber ]: state.scopedDiaryWeeks[year][weekNumber]
+        .concat((() => { 
+          const days = state.scopedDiaryWeeks[year][weekNumber];
+          if (days.indexOf(d => d.date_number === ordinal) === -1) {
+            return [{
+              date_number: ordinal,
+              year,
+              notes: [ note ]
+            }]
           }
-        } else {
-          w.days.push({
-            date_number: ordinal,
-            year: 2018,
-            notes: [ note ]
-          })
-        }
-      }
+          return []
+        })())
+        .map(d => {
+          if (d.date_number === ordinal) {
 
-      return w
-    })
+            if (d.notes.findIndex(n => n.id === note.id) === -1) {
+              return {
+                ...d,
+                notes: [ ...d.notes, note ]
+              }
+            } else if (force) {
+              // to implement
+            }
+          }
+          
+          return d
+        })
+      }
+    }
   },
 
-  [types.UPDATE_NOTE] (state, { weekNumber, ordinal, note }) {
-    state.scopedDiaryWeeks = state.scopedDiaryWeeks.map(w => {
-      if (w.weekNumber === weekNumber) {
-        const dayIdx = w.days.findIndex(d => d.date_number === ordinal)
-        const day = w.days[dayIdx]
-        const noteIdx = day.notes.findIndex(n => n.id === note.id)
-        
-        day.notes.splice(noteIdx, 1, note)
-        w.days.splice(dayIdx, 1, day)
-      }
+  [types.UPDATE_NOTE] (state, { weekNumber, ordinal, year, note }) {
+    state.scopedDiaryWeeks = {
+      ...state.scopedDiaryWeeks,
+      [ year ]: {
+        ...state.scopedDiaryWeeks[year],
+        [weekNumber]: state.scopedDiaryWeeks[year][weekNumber].map(d => {
+          if (d.date_number === ordinal) {
+            return {
+              ...d,
+              notes: d.notes.map(n => {
+                if (n.id === note.id) {
+                  return note;
+                }
 
-      return w
-    })
+                return n;
+              })
+            }
+          }
+
+          return d;
+        })
+      }
+    }
   },
 
-  [types.DELETE_NOTE] (state, { weekNumber, ordinal, noteId }) {
-    state.scopedDiaryWeeks = state.scopedDiaryWeeks.map(w => {
-      if (w.weekNumber === weekNumber) {
-        const dayIdx = w.days.findIndex(d => d.date_number === ordinal)
-        const day = w.days[dayIdx]
-        const noteIdx = day.notes.findIndex(n => n.id === noteId)
-        
-        day.notes.splice(noteIdx, 1)
-        w.days.splice(dayIdx, 1, day)
+  [types.DELETE_NOTE] (state, { weekNumber, ordinal, year, noteId }) {
+    state.scopedDiaryWeeks = {
+      ...state.scopedDiaryWeeks,
+      [ year ]: {
+        ...state.scopedDiaryWeeks[year],
+        [weekNumber]: state.scopedDiaryWeeks[year][weekNumber].filter(d => {
+          return d.date_number !== ordinal
+        })
       }
-
-      return w
-    })
+    }
   }
 }

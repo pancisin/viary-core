@@ -29,8 +29,9 @@ const connectStomp = baseUrl => {
 
 const WebSocketPlugin = {
   install(Vue, { baseUrl }) {
+    const url = baseUrl || '';
     Vue.prototype.$wsubscribe = (endpoint, onmessage) => {
-      connectStomp(baseUrl).then(client => {
+      connectStomp(url).then(client => {
         return client.subscribe(endpoint, message => {
           if (onmessage) {
             onmessage(JSON.parse(message.body));
@@ -44,13 +45,13 @@ const WebSocketPlugin = {
     };
 
     Vue.prototype.$wsend = (dest, obj) => {
-      connectStomp(baseUrl).then(client => {
+      connectStomp(url).then(client => {
         client.send(dest, {}, JSON.stringify(obj))
       })
     };
 
     Vue.prototype.$wdisconnect = () => {
-      connectStomp(baseUrl).then(client => {
+      connectStomp(url).then(client => {
         client.disconnect();
       })
     }

@@ -143,8 +143,15 @@ export default {
       ...state.scopedDiaryWeeks,
       [ year ]: {
         ...state.scopedDiaryWeeks[year],
-        [weekNumber]: state.scopedDiaryWeeks[year][weekNumber].filter(d => {
-          return d.date_number !== ordinal
+        [weekNumber]: state.scopedDiaryWeeks[year][weekNumber].map(d => {
+          if (d.date_number === ordinal) {
+            return {
+              ...d,
+              notes: d.notes.filter(n => n.id !== noteId)
+            }
+          }
+
+          return d
         })
       }
     }

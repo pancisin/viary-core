@@ -60,7 +60,8 @@ $bg-gradient: linear-gradient(to right bottom, #e96443, #904e95);
       transition: background-color 0.1s ease-in-out;
 
       @media screen and (max-width: 480px) {
-        flex: 25% 1 0;
+        flex: auto 1 0;
+        min-height: 25%;
       }
 
       .diary-day-header {

@@ -14,12 +14,10 @@ const connectStomp = baseUrl => {
     const stompClient = Stomp.over(socket);
 
     connectPromise = new Promise((resolve, reject) => {
-      console.warn('connecting')
       stompClient.connect({}, frame => { 
         resolve(stompClient);
-        console.log(frame ) 
       }, err => {
-        reject();
+        reject(err);
       })
     })
   }

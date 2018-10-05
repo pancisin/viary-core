@@ -52,8 +52,10 @@ export default {
   created () {
     this.$store.registerModule(MODULE_NAMESPACE, store({ baseUrl: this.baseUrl }));
     this.$store.dispatch(`${MODULE_NAMESPACE}/initializeDiaries`).then(() => {
-      this.$store.dispatch(`${MODULE_NAMESPACE}/scopeDiary`, {}).then(() => {
-
+      this.$store.dispatch(`${MODULE_NAMESPACE}/scopeDiary`, {}).then(diary => {
+        this.$wsubscribe(`/topic/${diary.slug}`, noteWs => {
+          this.$store.dispatch(`${MODULE_NAMESPACE}/handleDiaryNoteChannel`, noteWs)
+        })
       }).catch(() => {
         this.$router.push({ name: 'diary.create', props: { intro: true } })
       })

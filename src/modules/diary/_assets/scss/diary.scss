@@ -1,5 +1,6 @@
 $diary-border: 1px solid #ccc;
 $current-color: #daffd8;
+$timeline-color: darken($current-color, 40%);
 $darken-amount: 2;
 $bg-gradient: linear-gradient(to right bottom, #e96443, #904e95);
 
@@ -108,6 +109,10 @@ $bg-gradient: linear-gradient(to right bottom, #e96443, #904e95);
       .diary-day-note {
         border-bottom: 1px solid transparent;
       
+        &.diary-day-note-upcoming {
+          border-top: 1px solid $timeline-color;
+        }
+
         .diary-day-note-content {
           &:before {
             content: ' - '

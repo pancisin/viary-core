@@ -81,20 +81,26 @@ export default {
     state.forecastData = forecast;
   },
 
-  [types.ADD_NOTE] (state, { weekNumber, ordinal, note }) {
+  [types.ADD_NOTE] (state, { weekNumber, ordinal, note, force }) {
     state.scopedDiaryWeeks = state.scopedDiaryWeeks.map(w => {
       if (w.weekNumber === weekNumber) {
         const dayIdx = w.days.findIndex(d => d.date_number === ordinal)
         
         if (dayIdx !== -1) {
           const day = w.days[dayIdx]
-          w.days.splice(dayIdx, 1, {
-            ...day,
-            notes: [
-              ...day.notes,
-              note
-            ]
-          })
+          const noteIdx = day.notes.findIndex(n => n.id === note.id)
+          if (noteIdx === -1) {
+            w.days.splice(dayIdx, 1, {
+              ...day,
+              notes: [
+                ...day.notes,
+                note
+              ]
+            })
+          } else if (force === true) {
+            day.notes.splice(noteIdx, 1, note)
+            w.days.splice(dayIdx, 1, day)
+          }
         } else {
           w.days.push({
             date_number: ordinal,

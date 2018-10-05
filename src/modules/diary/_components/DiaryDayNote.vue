@@ -1,5 +1,8 @@
 <template>
-  <div class="diary-day-note">
+  <div 
+    class="diary-day-note" 
+    :class="{ 'diary-day-note-upcoming' : upcoming }">
+    
     <div v-if="editMode" class="d-flex jc-sb w-100p">
       <form 
         class="form flex-grow-1 mL-10 mR-10" 
@@ -39,6 +42,12 @@ export default {
     ts: {
       type: Number,
       required: true
+    },
+    upcoming: {
+      type: Boolean,
+      default () {
+        return false;
+      }
     }
   },
   directives: {

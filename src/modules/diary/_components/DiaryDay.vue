@@ -1,7 +1,7 @@
 <template>
    <div 
       class="diary-day d-flex flex-column"
-      :class="{ 'diary-day-current' : day.startOf('day').toMillis() === DateTime.local().startOf('day').toMillis(), 'diary-day-focused' : scopedDay.ts === day.ts }"
+      :class="{ 'diary-day-current' : isCurrent, 'diary-day-focused' : scopedDay.ts === day.ts }"
       @click="focusDayContent(day, $event)">
 
       <div class="diary-day-header">
@@ -19,13 +19,11 @@
         v-for="(note, idx) in day.notes" 
         :key="idx" 
         :note="note" 
-        :ts="day.toMillis()" />
+        :ts="day.toMillis()"
+        :upcoming="upcomingNote.id === note.id" />
 
       <form class="form" @submit.prevent="submitDayNote">
-        <input 
-          class="diary-day-content flex-grow-1 text-secondary" >
-          <!-- v-model="day.content"  -->
-          <!-- @input="dayUpdate"> -->
+        <input class="diary-day-content flex-grow-1 text-secondary" >
       </form>
     </div>
 </template>
@@ -36,6 +34,7 @@ import { DateTime } from 'luxon';
 import { mapGetters, mapActions } from 'vuex';
 import { WeatherIconsMap } from '@/maps';
 import DiaryDayNote from './DiaryDayNote';
+import { sortNotesByTime } from '../utils';
 
 export default {
   components: {
@@ -51,8 +50,23 @@ export default {
   },
   computed: {
     ...mapGetters('$_diary', ['scopedDay']),
-    DateTime() {
-      return DateTime;
+    isCurrent () {
+      return this.day.startOf('day').toMillis() === DateTime.local().startOf('day').toMillis()
+    },
+    upcomingNote () {
+      if (this.isCurrent) {
+        return this.day.notes
+          .filter(n => {
+            if (n.time != null) {
+              return DateTime.fromSQL(n.time) > DateTime.local()
+            }
+          })
+          .sort(sortNotesByTime)[0]
+      }
+
+      return {
+        id: null
+      }
     }
   },
   methods: {

@@ -54,6 +54,32 @@ export default ({ baseUrl }) => {
     })
   }
 
+  const handleDiaryNoteChannel = ({ commit }, noteWs) => {
+    const date = DateTime.fromObject({ ordinal: noteWs.date_number })
+    const dateData = {
+      weekNumber: date.weekNumber,
+      ordinal: date.ordinal
+    }
+
+    const operationMapping = {
+      CREATE: types.ADD_NOTE,
+      UPDATE: types.UPDATE_NOTE,
+      DELETE: types.DELETE_NOTE
+    }
+
+    const mutationType = operationMapping[noteWs.operation]
+
+    if (mutationType == null) {
+      throw new Error(`${noteWs.operation} operation is not implemented therefore it cannot be handled properly.`)
+    }
+
+    commit(mutationType, { 
+      ...dateData, 
+      note: noteWs,
+      noteId: noteWs.id
+    })
+  }
+
   const scopeDiary = ({ commit, getters, dispatch }, { slug, scopeDate }) => {
     return new Promise((resolve, reject) => {
 
@@ -188,6 +214,7 @@ export default ({ baseUrl }) => {
     createDiary,
     updateDiary,
     scopeDiary,
+    handleDiaryNoteChannel,
     scopeDay,
     loadWeekData,
     loadWeekWeatherData,

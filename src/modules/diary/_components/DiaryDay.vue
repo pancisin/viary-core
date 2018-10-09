@@ -61,7 +61,7 @@ export default {
               return DateTime.fromSQL(n.time) > DateTime.local()
             }
           })
-          .sort(sortNotesByTime)[0]
+          .sort(sortNotesByTime)[0] || { id: null }
       }
 
       return {

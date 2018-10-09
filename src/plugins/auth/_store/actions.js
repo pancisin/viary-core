@@ -1,5 +1,6 @@
 import * as types from './mutation_types';
 import AuthApi from '../_api/auth.api';
+import { removeAccessToken, setAccessToken, setRefreshToken, getRefreshToken } from '../utils';
 
 export default ({ baseUrl }) => {
   const Api = AuthApi(baseUrl)
@@ -10,9 +11,9 @@ export default ({ baseUrl }) => {
     }
 
     return new Promise(resolve => {
-      const storage = remember ? window.localStorage : window.sessionStorage;
       Api.login(credentials, result => {
-        storage.setItem('access_token', result.access_token);
+        setAccessToken(result.access_token, remember);
+        setRefreshToken(result.refresh_token);
         dispatch('initializeUser').then(resolve);
       });
     });
@@ -33,30 +34,38 @@ export default ({ baseUrl }) => {
     });
   }
 
+  const refreshLogin = ({ commit }) => {
+    return new Promise((resolve, reject) => {
+      const token = getRefreshToken();
+      Api.refreshToken(token, result => {
+        setAccessToken(result.access_token, true);
+        setRefreshToken(result.refresh_token);
+        resolve(result);
+      }, reject)
+    })
+  }
+
   const initializeUser = ({ commit }) => {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       commit(types.LOADING_USER, true);
 
       Api.getMe(user => {
         commit(types.SET_USER, { user });
         commit(types.LOADING_USER, false);
-
         resolve(user);
+      }, err => {
+        commit(types.LOADING_USER, false);
+        console.error(err)
+        reject();
       });
     });
   }
 
   const logout = ({ commit }) => {
     return new Promise(resolve => {
-      window.localStorage.removeItem('access_token');
-      window.sessionStorage.removeItem('access_token');
-
+      removeAccessToken();
       commit(types.SET_USER, { user: null });
-
-      // dispatch('flushDiaries');d
       resolve();
-      // dispatch('resetModelModule');
-      // dispatch('resetApiModule');
     });
   }
 
@@ -64,6 +73,7 @@ export default ({ baseUrl }) => {
     login,
     register,
     initializeUser,
-    logout
+    logout,
+    refreshLogin
   }
 };

@@ -1,11 +1,5 @@
 export default {
   user: state => state.user,
-  authenticated: state => {
-    return (
-      state.authenticated ||
-      window.localStorage.getItem('access_token') != null ||
-      window.sessionStorage.getItem('access_token') != null
-    );
-  },
+  authenticated: state => state.authenticated,
   loadingUser: state => state.loadingUser
 };

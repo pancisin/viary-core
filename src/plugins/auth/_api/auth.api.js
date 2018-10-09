@@ -21,21 +21,49 @@ export default baseUrl => {
       });
   }
 
+  const refreshToken = (refreshToken, success) => {
+    const data = {
+      grant_type: 'refresh_token',
+      refresh_token: refreshToken
+    }
+
+    Vue.http
+      .post(`${API_URL}/oauth/token`, data, {
+        emulateJSON: true,
+        headers: {
+          'Authorization': `Basic ${window.btoa('testjwtclientid:XY7kmzoNzl100')}`
+        }
+      })
+      .then(response => {
+        success(response.body);
+      })
+      .catch(err => {
+        if (error) {
+          error(err);
+        }
+      });
+  }
+
   const register = (user, success) => {
     Vue.http.post(`${API_URL}/api/register`, user).then(response => {
       success(response.body);
     });
   }
 
-  const getMe = (success) => {
+  const getMe = (success, error) => {
     Vue.http.get(`${ME_API_URL}`).then(response => {
       success(response.body);
+    }).catch(err => {
+      if (error) {
+        error(err);
+      }
     });
   }
 
   return {
     login,
     register,
-    getMe
+    getMe,
+    refreshToken
   }
 };

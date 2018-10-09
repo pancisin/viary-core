@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-show="!loadingUser">
     <slot v-if="authenticated" />
     <login-form v-else />
   </div>
@@ -9,7 +9,7 @@
 import { mapGetters } from 'vuex';
 export default {
   computed: {
-    ...mapGetters('$_auth', ['authenticated'])
+    ...mapGetters('$_auth', ['authenticated', 'loadingUser'])
   }
 };
 </script>

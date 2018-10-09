@@ -4,6 +4,7 @@ const MODULE_NAMESPACE = '$_auth'
 import { LoginForm, RegisterForm } from './_components'
 
 import AuthInterceptor from './_api/auth.interceptor';
+import { getAccessToken } from './utils';
 
 const AuthPlugin = {
   install(Vue, { store, baseUrl }) {
@@ -18,7 +19,7 @@ const AuthPlugin = {
     }
     
     Vue.http.interceptors.push(AuthInterceptor(store));
-    if (store.getters['$_auth/authenticated']) {
+    if (getAccessToken() != null) {
       store.dispatch(`${MODULE_NAMESPACE}/initializeUser`)
     }
 

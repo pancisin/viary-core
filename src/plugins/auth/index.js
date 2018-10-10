@@ -19,13 +19,18 @@ const AuthPlugin = {
     }
 
     Vue.http.interceptors.push(AuthInterceptor(store));
-    if (getAccessToken() != null) {
-      store.dispatch(`${MODULE_NAMESPACE}/initializeUser`).then(res => { 
+
+    Promise.resolve(getAccessToken())
+      .then(token => {
+        if (token != null) {
+          return store.dispatch(`${MODULE_NAMESPACE}/initializeUser`)
+        }
+      })
+      .finally(_ => {
         if (oncomplete) {
           oncomplete()
         }
       })
-    }
 
     Vue.component('login-form', LoginForm)
     Vue.component('register-form', RegisterForm)

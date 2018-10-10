@@ -1,6 +1,6 @@
 import * as types from './mutation_types';
 import AuthApi from '../_api/auth.api';
-import { removeAccessToken, setAccessToken, setRefreshToken, getRefreshToken } from '../utils';
+import { removeAccessToken, setAccessToken, setRefreshToken, getRefreshToken, removeRefreshToken } from '../utils';
 
 export default ({ baseUrl }) => {
   const Api = AuthApi(baseUrl)
@@ -64,6 +64,7 @@ export default ({ baseUrl }) => {
   const logout = ({ commit }) => {
     return new Promise(resolve => {
       removeAccessToken();
+      removeRefreshToken();
       commit(types.SET_USER, { user: null });
       resolve();
     });

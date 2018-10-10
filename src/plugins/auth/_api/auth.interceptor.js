@@ -1,4 +1,4 @@
-import { getAccessToken, removeAccessToken, setAccessToken } from "../utils";
+import { getAccessToken, removeAccessToken, setAccessToken, getRefreshToken } from "../utils";
 import Vue from 'vue';
 
 let allowRefresh = true;
@@ -6,12 +6,12 @@ let allowRefresh = true;
 export default store => (request, next) => {
   const token = getAccessToken();
 
-  if (token) {
+  if (token != null) {
     request.headers.set("Authorization", `Bearer ${token}`);
   }
 
   next(response => {
-    if (response.status === 401) {
+    if (response.status === 401 && getRefreshToken() != null) {
       allowRefresh = false;
       removeAccessToken();
       return store.dispatch('$_auth/refreshLogin').then(result => {

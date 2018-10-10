@@ -23,7 +23,7 @@ export default {
     duration: {
       type: Number,
       default() {
-        return 750;
+        return 500;
       }
     },
   },
@@ -41,8 +41,9 @@ export default {
         beforeEnter: (el) => {
           velocity.hook(el, 'scaleX', scaleFactor);
           velocity.hook(el, 'scaleY', scaleFactor);
-          velocity.hook(el, 'rotateY', '40deg');
+          // velocity.hook(el, 'rotateY', '40deg');
           el.style.opacity = 0;
+          // el.style.border = '1px solid #ccc'
         },
         enter: (el, done) => {
           const index = [ ...el.parentElement.children ].findIndex(e => e === el);
@@ -60,16 +61,21 @@ export default {
             if (done) {
               done();
             }
-            
           });
         },
         afterEnter: el => {
           el.removeAttribute('style');
         },
+        beforeLeave: (el, done) => {
+          el.style.border = '1px solid #ccc'
+        },
         leave: (el, done) => {
           const children = [ ...el.parentElement.children ]
           const index = children.findIndex(e => e === el);
           const order = (children.length - 1) - index;
+          
+          done();
+          return;
 
           velocity(el, {
             opacity: 0,
@@ -84,6 +90,9 @@ export default {
               done()
             }
           });
+        },
+        afterLeave: el => {
+          el.removeAttribute('style');
         }
       }
     };

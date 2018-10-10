@@ -2,7 +2,7 @@
   <div class="diary" v-loading="loadingDiary">
     <diary-info class="pY-10" />
 
-    <!-- <diary-transition tag="div" class="diary-week pX-10 pB-10"> -->
+    <!-- <diary-transition tag="div" class="diary-week"> -->
       <div class="diary-week">
         <diary-day v-for="day in weekDays(7)" :key="day.ts" :day="day" />
       </div>

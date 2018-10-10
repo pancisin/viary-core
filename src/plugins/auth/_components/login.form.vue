@@ -17,9 +17,9 @@
         placeholder="Password">
     </div>
 
-    <router-link :to="{ name: 'signup' }">
+    <!-- <router-link :to="{ name: 'signup' }">
       Haven't got account yet ?
-    </router-link>
+    </router-link> -->
 
     <div class="form-group">
       <div class="peers ai-c jc-sb fxw-nw">

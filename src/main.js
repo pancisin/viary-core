@@ -14,10 +14,11 @@ Vue.use(WebSocketPlugin, {
 Vue.use(VueResource)
 Vue.use(AuthPlugin, {
   store,
-  baseUrl: BASE_URL
+  baseUrl: BASE_URL,
+  oncomplete: _ => {
+    new Vue({
+      store,
+      render: h => h(App)
+    }).$mount('#app')
+  }
 })
-
-new Vue({
-  store,
-  render: h => h(App)
-}).$mount('#app')

@@ -14,9 +14,10 @@ const connectStomp = baseUrl => {
     const stompClient = Stomp.over(socket);
 
     connectPromise = new Promise((resolve, reject) => {
-      stompClient.connect({}, frame => { 
+      stompClient.connect({}, frame => {
         resolve(stompClient);
       }, err => {
+        console.warn('Websocket connection is probably disconnected !')
         reject(err);
       })
     })

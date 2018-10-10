@@ -1,5 +1,5 @@
 <template>
-  <div v-show="!loadingUser">
+  <div>
     <slot v-if="authenticated" />
     <login-form v-else />
   </div>
@@ -13,6 +13,3 @@ export default {
   }
 };
 </script>
-
-<style>
-</style>

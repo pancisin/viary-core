@@ -26,7 +26,7 @@ const AuthPlugin = {
           return store.dispatch(`${MODULE_NAMESPACE}/initializeUser`)
         }
       })
-      .finally(_ => {
+      .then(_ => {
         if (oncomplete) {
           oncomplete()
         }

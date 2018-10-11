@@ -1,40 +1,35 @@
 <template>
   <div class="diary" v-loading="loadingDiary">
     <diary-info class="pY-10" />
-
-    <!-- <diary-transition tag="div" class="diary-week"> -->
-      <div class="diary-week">
-        <diary-day v-for="day in weekDays(7)" :key="day.ts" :day="day" />
-      </div>
-    <!-- </diary-transition> -->
-
+    <diary-week :days="weekDays(7)" />
     <diary-controls />
   </div>
 </template>
 
 <script>
-import DiaryDay from './DiaryDay';
 import DiaryControls from './DiaryControls';
 import DiaryInfo from './DiaryInfo';
+import DiaryWeek from './DiaryWeek';
 
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 
 import { DiaryTransition } from '@/components/transitions';
-import { Loading, ClickOutside } from '@/directives';
+import { Loading } from '@/directives';
+
+require("easeplus-velocity/release/1.2/velocity.easeplus.min");
 
 export default {
   components: {
-    DiaryDay,
     DiaryControls,
     DiaryInfo,
-    DiaryTransition
+    DiaryTransition,
+    DiaryWeek
   },
   directives: {
-    Loading,
-    ClickOutside
+    Loading
   },
   computed: {
-    ...mapGetters('$_diary', ['loadingDiary', 'scopedDay', 'weekDays'])
+    ...mapGetters('$_diary', ['loadingDiary', 'weekDays', 'scopedDay'])
   }
 }
 </script>

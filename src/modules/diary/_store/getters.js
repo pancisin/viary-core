@@ -17,12 +17,13 @@ export default {
   loadingDiary: state => state.loadingDiaryInProgress || state.savingDiaryInProgress,
   savingDiary: state => state.savingDiary,
   forecastData: state => state.forecastData,
-  weekDays: (state, getters) => count => {
+  weekDays: (state, getters) => (count, weekNumber) => {
     const scopedDay = getters.scopedDay;
-    const daysContent = getters.getDiaryWeek(scopedDay.weekNumber, scopedDay.year)
+    const week = weekNumber != null ? DateTime.fromObject({ weekNumber }) : getters.scopedDay.startOf('week')
+    const daysContent = getters.getDiaryWeek(week.weekNumber, scopedDay.year)
 
     return Array.from({ length: count || 7 }, (v, i) => i).map(i => {
-      const d = scopedDay.startOf('week').plus({ days: i })
+      const d = week.plus({ days: i })
       const c = daysContent.filter(dc => dc.date_number === d.ordinal)[0]
       const weatherData = getters.forecastData.filter(w => DateTime.fromMillis(w.dt * 1000).toSQLDate() === d.toSQLDate());
 

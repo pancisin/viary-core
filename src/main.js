@@ -20,5 +20,8 @@ Vue.use(AuthPlugin, {
       store,
       render: h => h(App)
     }).$mount('#app')
+  },
+  onlogout: _ => {
+    console.log('User logged out.')
   }
 })

@@ -2,7 +2,7 @@ import * as types from './mutation_types';
 import AuthApi from '../_api/auth.api';
 import { removeAccessToken, setAccessToken, setRefreshToken, getRefreshToken, removeRefreshToken } from '../utils';
 
-export default ({ baseUrl }) => {
+export default ({ baseUrl, onlogout }) => {
   const Api = AuthApi(baseUrl)
   
   const login = ({ state, dispatch }, { credentials, remember }) => {
@@ -67,6 +67,10 @@ export default ({ baseUrl }) => {
       removeRefreshToken();
       commit(types.SET_USER, { user: null });
       resolve();
+
+      if(onlogout) {
+        onlogout();
+      }
     });
   }
 

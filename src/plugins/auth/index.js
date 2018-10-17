@@ -1,18 +1,18 @@
 import authStore from './_store';
 
 const MODULE_NAMESPACE = '$_auth'
-import { LoginForm, RegisterForm } from './_components'
+import { LoginForm, RegisterForm, AuthWrapper } from './_components'
 
 import AuthInterceptor from './_api/auth.interceptor';
 import { getAccessToken } from './utils';
 
 const AuthPlugin = {
-  install(Vue, { store, baseUrl, oncomplete }) {
+  install(Vue, { store, baseUrl, oncomplete, onlogout }) {
     if (!store) {
       throw new Error('Please provide vuex store.');
     }
 
-    store.registerModule(MODULE_NAMESPACE, authStore({ baseUrl: baseUrl || '' }));
+    store.registerModule(MODULE_NAMESPACE, authStore({ baseUrl: baseUrl || '', onlogout }));
     
     if (!Vue.http) {
       throw new Error('Vue resource plugin is strongly required!')
@@ -34,6 +34,7 @@ const AuthPlugin = {
 
     Vue.component('login-form', LoginForm)
     Vue.component('register-form', RegisterForm)
+    Vue.component('auth-wrapper', AuthWrapper)
   }
 };
 

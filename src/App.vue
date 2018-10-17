@@ -9,13 +9,11 @@
 </template>
 
 <script>
-import AuthWrapper from './components/internal/AuthWrapper'
 import { DiaryModule } from './modules'
 
 export default {
   name: 'app',
   components: {
-    AuthWrapper,
     DiaryModule
   }
 }

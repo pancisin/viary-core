@@ -3,11 +3,13 @@ import RootApi from '../../_api/root.api';
 const types = {
   SET_INIT: 'SET_INIT',
   SET_INIT_IN_PROGRESS: 'SET_INIT_IN_PROGRESS',
-  SET_THEME: 'SET_THEME'
+  SET_THEME: 'SET_THEME',
+  SET_CREATOR_MODE: 'SET_CREATOR_MODE'
 }
 
 const state = {
   initialData: {},
+  creatorMode: false,
   theme: {},
   loadingInitialData: false
 }
@@ -23,7 +25,8 @@ const getters = {
 
   //   return {}
   // },
-  theme: state => state.theme
+  theme: state => state.theme,
+  creatorMode: state => state.creatorMode
 }
 
 const actions = ({ baseUrl }) => {
@@ -48,9 +51,14 @@ const actions = ({ baseUrl }) => {
     commit(types.SET_THEME, { theme: getters.themes[themeIdx] })
   }
 
+  const switchCreatorMode = ({ commit, getters }, state) => {
+    commit(types.SET_CREATOR_MODE, { state: state || !getters.creatorMode })
+  }
+
   return {
     initializeApplication,
-    selectTheme
+    selectTheme,
+    switchCreatorMode
   }
 };
 
@@ -65,6 +73,10 @@ const mutations = {
 
   [types.SET_THEME] (state, { theme }) {
     state.theme = theme;
+  },
+  
+  [types.SET_CREATOR_MODE] (st, { state }) {
+    st.creatorMode = state;
   }
 };
 

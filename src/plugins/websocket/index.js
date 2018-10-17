@@ -1,7 +1,11 @@
 import SockJS from "sockjs-client";
 import Stomp from "webstomp-client";
 
+import { uuid } from './utils';
+
 var connectPromise = null;
+const subscriptions = {}
+
 const connectStomp = baseUrl => {
   if (connectPromise == null) {
     const token =
@@ -30,17 +34,27 @@ const WebSocketPlugin = {
   install(Vue, { baseUrl }) {
     const url = baseUrl || '';
     Vue.prototype.$wsubscribe = (endpoint, onmessage) => {
+      const subscriptionUuid = uuid();
+
       connectStomp(url).then(client => {
-        return client.subscribe(endpoint, message => {
+        const sub = client.subscribe(endpoint, message => {
           if (onmessage) {
             onmessage(JSON.parse(message.body));
           }
         });
+
+        subscriptions[subscriptionUuid] = sub;
       })
+
+      return subscriptionUuid;
     };
 
-    Vue.prototype.$wunsubscribe = subscription => {
+    Vue.prototype.$wunsubscribe = subUuid => {
+      const subscription = subscriptions[subUuid];
 
+      if (subscription != null) {
+        subscription.unsubscribe();
+      }
     };
 
     Vue.prototype.$wsend = (dest, obj) => {

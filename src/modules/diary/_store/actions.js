@@ -5,8 +5,6 @@ import * as types from './mutation-types';
 
 import { DateTime } from 'luxon';
 
-// import router from '@/router'
-
 export default ({ baseUrl }) => {
   const Api = {
     ...DiaryApi(baseUrl),

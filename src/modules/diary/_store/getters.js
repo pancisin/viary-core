@@ -46,5 +46,6 @@ export default {
     const end = scopedDay.endOf('month').endOf('week')
 
     return Array.from({ length: Math.round(end.diff(start, 'days').days) }, (v, i) => i).map(i => start.plus({ days: i }))
-  }
+  },
+  hasAnyDiary: state => state.diaries.length > 0
 }

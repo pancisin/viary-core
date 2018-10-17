@@ -115,7 +115,7 @@ export default {
     logoutNow() {
       this.logout().then(() => {
         this.$store.dispatch('$_diary/flushDiaries')
-        this.$router.push({ name: 'signin' })
+        // this.$router.push({ name: 'signin' })
       })
     },
     switchedDiary () {

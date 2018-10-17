@@ -33,9 +33,9 @@
         placeholder="Password">
     </div>
 
-    <router-link :to="{ name: 'signin' }">
+    <a @click="onsignin">
       Already have account ?
-    </router-link>
+    </a>
 
     <div class="form-group text-right">
       <button class="btn btn-primary">Sign up</button>
@@ -48,6 +48,12 @@ import { mapActions } from 'vuex'
 export default {
   props: {
     success: {
+      type: Function,
+      default () {
+        return () => {}
+      }
+    },
+    onsignin: {
       type: Function,
       default () {
         return () => {}

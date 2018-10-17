@@ -4,7 +4,8 @@
       class="col-lg-3 d-none d-lg-flex jc-sb ai-fs pB-10 flex-column calendar-column c-white h-100vh"
       ref="calendarColumn">
 
-      <calendar />
+      <calendar v-if="!creatorMode" />
+      <div v-else></div>
 
       <!-- <img src="./_assets/img/viary_logo_1000_rounded.png" style="width:100%"> -->
 
@@ -16,21 +17,24 @@
       </a>
     </div>
     <div class="col-lg-9">
-      <diary :theme-color="theme.color" />
+      <diary v-if="!creatorMode" :theme-color="theme.color" />
+      <diary-creator :dismissable="hasAnyDiary" v-else />
     </div>
   </div>
 </template>
 
 <script>
 import Diary from './_components/Diary';
+import DiaryCreator from './_components/DiaryCreator';
+import Calendar from './_components/Calendar';
+
 import store from './_store';
 import SettingsModule from './_store/modules/Settings.module';
 
 const MODULE_NAMESPACE = '$_diary';
-import Calendar from './_components/Calendar'
 
 import UnsplashApi from './_api/unsplash.api'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'DiaryContainer',
@@ -44,20 +48,32 @@ export default {
   },
   components: {
     Diary,
-    Calendar
+    Calendar,
+    DiaryCreator
   },
   computed: {
-    ...mapGetters('$_settings', ['theme'])
+    ...mapGetters('$_settings', ['theme', 'creatorMode']),
+    ...mapGetters('$_diary', ['hasAnyDiary', 'scopedDiary'])
   },
   created () {
     this.$store.registerModule(MODULE_NAMESPACE, store({ baseUrl: this.baseUrl }));
     this.$store.dispatch(`${MODULE_NAMESPACE}/initializeDiaries`).then(() => {
-      this.$store.dispatch(`${MODULE_NAMESPACE}/scopeDiary`, {}).then(diary => {
-        this.$wsubscribe(`/topic/${diary.slug}`, noteWs => {
+      var subscription = null;
+
+      this.$watch('scopedDiary', diary => {
+        if (subscription) {
+          this.$wunsubscribe(subscription)
+        }
+
+        subscription = this.$wsubscribe(`/topic/${diary.slug}`, noteWs => {
           this.$store.dispatch(`${MODULE_NAMESPACE}/handleDiaryNoteChannel`, noteWs)
         })
+      })
+
+      this.$store.dispatch(`${MODULE_NAMESPACE}/scopeDiary`, {}).then(diary => {
+        
       }).catch(() => {
-        this.$router.push({ name: 'diary.create', props: { intro: true } })
+        this.switchCreatorMode(true)
       })
     });
 
@@ -78,6 +94,10 @@ export default {
   },
   beforeDestroy () {
     this.$store.unregisterModule(MODULE_NAMESPACE);
+    this.$store.unregisterModule('$_settings');
+  },
+  methods: {
+    ...mapActions('$_settings', ['switchCreatorMode'])
   }
 };
 </script>

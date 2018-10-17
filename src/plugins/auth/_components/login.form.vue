@@ -17,9 +17,7 @@
         placeholder="Password">
     </div>
 
-    <!-- <router-link :to="{ name: 'signup' }">
-      Haven't got account yet ?
-    </router-link> -->
+    <a @click="onsignup">Haven't got accout yet ?</a>
 
     <div class="form-group">
       <div class="peers ai-c jc-sb fxw-nw">
@@ -55,6 +53,12 @@ export default {
       default () {
         return () => {}
       }
+    },
+    onsignup: {
+      type: Function,
+      default () {
+        return () => {}
+      }
     }
   },
   data () {
@@ -74,7 +78,6 @@ export default {
         remember: this.remember
       }).then(() => {
         this.success()
-        // this.$router.replace({ name: 'home' });
       });
     }
   }

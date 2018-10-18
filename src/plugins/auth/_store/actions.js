@@ -10,11 +10,13 @@ export default ({ baseUrl, onlogout }) => {
       return;
     }
 
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       Api.login(credentials, result => {
         setAccessToken(result.access_token, remember);
         setRefreshToken(result.refresh_token);
         dispatch('initializeUser').then(resolve);
+      }, error => {
+        reject(error)
       });
     });
   }

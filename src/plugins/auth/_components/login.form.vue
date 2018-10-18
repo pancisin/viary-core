@@ -6,6 +6,7 @@
         v-model.trim="credentials.username"
         type="email"
         class="form-control"
+        :class="{ 'is-invalid' : hasError }"
         placeholder="john@doe.com">
     </div>
     <div class="form-group">
@@ -14,7 +15,11 @@
         v-model.trim="credentials.password"
         type="password"
         class="form-control"
+        :class="{ 'is-invalid' : hasError }"
         placeholder="Password">
+      <div class="invalid-feedback">
+        User credentials are invalid. Check your email and password, please.
+      </div>
     </div>
 
     <a @click="onsignup">Haven't got accout yet ?</a>
@@ -67,7 +72,8 @@ export default {
         username: '',
         password: ''
       },
-      remember: true
+      remember: true,
+      hasError: false
     };
   },
   methods: {
@@ -78,6 +84,11 @@ export default {
         remember: this.remember
       }).then(() => {
         this.success()
+      }).catch(err => {
+        if (err.error === 'invalid_grant') {
+          this.credentials.password = '';
+          this.hasError = true;
+        }
       });
     }
   }

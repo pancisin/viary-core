@@ -3,7 +3,7 @@ export default baseUrl => {
   const API_URL = `${baseUrl}`;
   const ME_API_URL = `${baseUrl}/api/v1/user/me`;
 
-  const login = (credentials, success) => {
+  const login = (credentials, success, error) => {
     var data = {
       ...credentials,
       grant_type: 'password'
@@ -18,6 +18,11 @@ export default baseUrl => {
       })
       .then(response => {
         success(response.body);
+      })
+      .catch(response => {
+        if (error) {
+          error(response.body)
+        }
       });
   }
 

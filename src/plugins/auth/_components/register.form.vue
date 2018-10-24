@@ -44,7 +44,9 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions } from 'vuex';
+import { Loading } from '@/directives';
+
 export default {
   props: {
     success: {

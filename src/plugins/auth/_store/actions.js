@@ -5,15 +5,17 @@ import { removeAccessToken, setAccessToken, setRefreshToken, getRefreshToken, re
 export default ({ baseUrl, onlogout }) => {
   const Api = AuthApi(baseUrl)
   
-  const login = ({ state, dispatch }, { credentials, remember }) => {
+  const login = ({ state, dispatch, commit }, { credentials, remember }) => {
     if (state.authenticated) {
       return;
     }
 
     return new Promise((resolve, reject) => {
+      commit(types.LOGIN_IN_PROGRESS, true);
       Api.login(credentials, result => {
         setAccessToken(result.access_token, remember);
         setRefreshToken(result.refresh_token);
+        commit(types.LOGIN_IN_PROGRESS, false);
         dispatch('initializeUser').then(resolve);
       }, error => {
         reject(error)
@@ -21,10 +23,11 @@ export default ({ baseUrl, onlogout }) => {
     });
   }
 
-  const register = ({ dispatch }, user) => {
+  const register = ({ dispatch, commit }, user) => {
     return new Promise(resolve => {
+      commit(types.REGISTER_IN_PROGRESS, true);
       Api.register(user, () => {
-
+        commit(types.REGISTER_IN_PROGRESS, false);
         dispatch('login', {
           credentials: {
             username: user.email,

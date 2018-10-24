@@ -16,7 +16,7 @@ import { mapGetters, mapActions } from 'vuex';
 import { DiaryTransition } from '@/components/transitions';
 import { Loading } from '@/directives';
 
-require("easeplus-velocity/release/1.2/velocity.easeplus.min");
+// require("easeplus-velocity/release/1.2/velocity.easeplus.min");
 
 export default {
   components: {

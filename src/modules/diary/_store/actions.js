@@ -1,26 +1,90 @@
 import DiaryApi from '../_api/diary.api';
+import DiaryPouchApi from '../_db/diary.api';
 import NoteApi from '../_api/note.api';
+import NotePouchApi from '../_db/note.api';
+import ChangePouchApi from '../_db/change.api';
 import WeatherApi from '../_api/weather.api';
 import * as types from './mutation-types';
 
 import { DateTime } from 'luxon';
 
-export default ({ baseUrl }) => {
-  const Api = {
-    ...DiaryApi(baseUrl),
-    ...NoteApi(baseUrl)
-  } 
+export default (options) => {
+  const baseUrl = options.baseUrl || '';
+  const useLocalDatabase = options.useLocalDatabase; // try this as function
+  const disableWeatherData = options.disableWeatherData; // not implemented
+  const offlineMode = options.offlineMode; // not implemented
+
+  const pouch = {
+    ...DiaryPouchApi(),
+    ...NotePouchApi()
+  }
+
+  const api = _ => {
+    return useLocalDatabase() ? pouch : {
+      ...DiaryApi(baseUrl),
+      ...NoteApi(baseUrl),
+    }
+  }
 
   const WeatherApiInstance = WeatherApi();
 
-  const initializeDiaries = ({ commit }) => {
+  const initializeDiaries = ({ commit, dispatch }) => {
     commit(types.SET_LOADING_DIARY, true);
     return new Promise(resolve => {
-      Api.getDiaries(diaries => {
+      api().getDiaries(diaries => {
         commit(types.SET_DIARIES, { diaries })
         commit(types.SET_LOADING_DIARY, false);  
+      
+        if (!useLocalDatabase()) {
+          dispatch('synchronizeDiaries');
+          dispatch('synchronizeNotes');
+        }
+        
         resolve(diaries)
       })
+    })
+  }
+
+  /**
+   * Diaries synchronization vuex <-> pouchDb
+   * @param {*} param0 
+   */
+  const synchronizeDiaries = ({ getters, commit }) => {
+    const diaries = getters.diaries;
+    const promises = [];
+    
+    pouch.getDiaries(dbDiaries => {
+
+      // Store remote only diaries locally.
+      diaries
+        .filter(d => !dbDiaries.map(dbd => dbd._id).includes(d.slug))
+        .forEach(d => {
+          pouch.postDiary({
+            ...d,
+            _id: d.slug
+          })
+        })
+
+      // Post local only diaries to remote.
+      dbDiaries
+        .filter(dbd => !diaries.map(d => d.slug).includes(dbd._id))
+        .forEach(dbd => {
+          api().postDiary(dbd, diary => {
+            pouch.deleteDiary(dbd._id)
+            pouch.putDiary({
+              ...diary,
+              _id: diary.slug
+            })
+            commit(types.ADD_DIARY, { diary })
+          })
+        })
+
+      // Synchronize those that are on both sources.
+      dbDiaries
+        .filter(dbd => diaries.map(d => d.slug).includes(dbd._id))
+        .forEach(dbd => {
+
+        })
     })
   }
 
@@ -33,7 +97,7 @@ export default ({ baseUrl }) => {
         return;
       }
 
-      Api.postDiary(diary, result => {
+      api().postDiary(diary, result => {
         commit(types.ADD_DIARY, { diary: { ...result} })
         dispatch('scopeDiary', { slug: result.slug })
         commit(types.SET_LOADING_DIARY, false);
@@ -45,7 +109,7 @@ export default ({ baseUrl }) => {
   const updateDiary = ({ commit }, diary) => {
     commit(types.SET_LOADING_DIARY, true);
     return new Promise((resolve, reject) => {
-      Api.putDiary(diary.slug, diary, result => {
+      api().putDiary(diary.slug, diary, result => {
         commit(types.UPDATE_DIARY, { diary: result })
         commit(types.SET_LOADING_DIARY, false);
       })
@@ -122,10 +186,13 @@ export default ({ baseUrl }) => {
       }
 
       if (weekUpdate) {
-        Promise.all([
-          dispatch('loadWeekData', { weekNumber: day.weekNumber, year: day.year }),
-          dispatch('loadWeekWeatherData', day.weekNumber)
-        ]).then(() => {
+        const promises = [dispatch('loadWeekData', { weekNumber: day.weekNumber, year: day.year })]
+
+        if (!useLocalDatabase() && !disableWeatherData) {
+          promises.push(dispatch('loadWeekWeatherData', day.weekNumber))
+        }
+
+        Promise.all(promises).then(() => {
           resolveCallback(day.toSQL())
         })
       } else {
@@ -139,12 +206,27 @@ export default ({ baseUrl }) => {
     // if (getters.getDiaryWeek(weekNumber) == null) {
       
     return new Promise(resolve => {
-      Api.getDays(getters.scopedDiary.slug, {
+      const diarySlug = getters.scopedDiary.slug;
+      api().getDays(diarySlug, {
         from: week.startOf('week').toFormat('MM/dd/yyyy'),
         to: week.endOf('week').toFormat('MM/dd/yyyy')
       }, days => {
         // commit(types.SET_SCOPED_DIARY_DAYS, { days });
         commit(types.ADD_WEEK_TO_SCOPE, { weekNumber, year, days: days });
+        
+        days.flatMap(d => { 
+          return d.notes.map(n => {
+            return {
+              ...n,
+              date_number: d.date_number,
+              year: d.year,
+              diary_id: diarySlug
+            }
+          }) 
+        }).forEach(note => {
+          pouch.syncUpdateNote(note.id, note)
+        })
+        
         resolve();
       })
     })
@@ -166,9 +248,14 @@ export default ({ baseUrl }) => {
   const updateDayNote = ({ commit, getters }, { note, weekNumber, ordinal, year }) => {
     return new Promise(resolve => {
       commit(types.SET_LOADING_DIARY, true);
-      Api.updateNote(note.id, note, result => {
+      api().updateNote(note.id, {
+        ...note,
+        date_number: ordinal,
+        year
+      }, result => {
         commit(types.UPDATE_NOTE, { weekNumber: weekNumber, ordinal, year, note: result })
         commit(types.SET_LOADING_DIARY, false);
+        pouch.syncUpdateNote(result.id, { ...result, date_number: ordinal, year })
         resolve(result)
       })
     })
@@ -179,13 +266,14 @@ export default ({ baseUrl }) => {
 
     return new Promise(resolve => {
       commit(types.SET_LOADING_DIARY, true);
-      Api.postNote(getters.scopedDiary.slug, {
-        content: note,
-        ordinal: ordinal,
+      api().postNote(getters.scopedDiary.slug, {
+        ...note,
+        ordinal,
         year: scopedDay.year,
       }, result => {
         commit(types.ADD_NOTE, { note: result, ordinal, weekNumber, year })
         commit(types.SET_LOADING_DIARY, false);
+        pouch.syncUpdateNote(result.id, { ...result, date_number: ordinal, year })
         resolve()
       })
     })
@@ -194,12 +282,37 @@ export default ({ baseUrl }) => {
   const deleteDayNote = ({ commit, getters }, { noteId, weekNumber, year, ordinal }) => {
     return new Promise(resolve => {
       commit(types.SET_LOADING_DIARY, true);
-      Api.deleteNote(noteId, result => {
+      api().deleteNote(noteId, result => {
         commit(types.DELETE_NOTE, { weekNumber, ordinal, year, noteId })
         commit(types.SET_LOADING_DIARY, false);
         resolve(result)
       }, err => {
         console.error(err)
+      })
+    })
+  }
+
+  const synchronizeNotes = ({ commit, dispatch }) => {
+    ChangePouchApi().getChanges(changes => {
+      const operationMapping = {
+        CREATE: 'addDayNote',
+        UPDATE: 'updateDayNote',
+        DELETE: 'deleteDayNote'
+      }
+
+      changes.forEach(change => {
+        const note = change.payload;
+        const date = DateTime.fromObject({ ordinal: note.date_number, year: note.year })
+
+        dispatch(operationMapping[change.operation], {
+          noteId: note.id,
+          note: note,
+          ordinal: note.date_number,
+          weekNumber: date.weekNumber,
+          year: note.year
+        }).then(result => {
+          ChangePouchApi().deleteChange(change._id)
+        })
       })
     })
   }
@@ -210,6 +323,7 @@ export default ({ baseUrl }) => {
 
   return {
     initializeDiaries,
+    synchronizeDiaries,
     createDiary,
     updateDiary,
     scopeDiary,
@@ -220,6 +334,7 @@ export default ({ baseUrl }) => {
     addDayNote,
     flushDiaries,
     updateDayNote,
+    synchronizeNotes,
     deleteDayNote
   }
 }

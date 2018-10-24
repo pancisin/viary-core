@@ -91,7 +91,7 @@ export default {
     finishEditing () {
       if (!this.deletingInProgress) {
         const date = DateTime.fromMillis(this.ts)
-        this.updateDayNote({ 
+        this.updateDayNote({
           note: this.noteCp, 
           weekNumber: date.weekNumber, 
           ordinal: date.ordinal, 

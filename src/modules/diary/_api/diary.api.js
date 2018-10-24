@@ -4,8 +4,14 @@ export default (baseUrl) => {
   const ME_API_URL = `${baseUrl}/api/v1/user/me`;
 
   const getDiaries = (success) => {
-    Vue.http.get(`${ME_API_URL}/diary`).then(response => {
-      success(response.body);
+    return new Promise(resolve => {
+      Vue.http.get(`${ME_API_URL}/diary`).then(response => {
+        if (success) {
+          success(response.body);
+        }
+        
+        resolve(response.body);
+      })
     })
   }
 

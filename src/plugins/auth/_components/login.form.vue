@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="submit">
+  <form @submit.prevent="submit" v-loading="loading">
     <div class="form-group">
       <label class="text-normal text-dark">Email</label>
       <input
@@ -51,6 +51,8 @@
 
 <script>
 import { mapActions } from 'vuex';
+import { Loading } from '@/directives';
+
 export default {
   props: {
     success: {
@@ -76,8 +78,11 @@ export default {
       hasError: false
     };
   },
+  directives: {
+    Loading
+  },
   methods: {
-    ...mapActions('$_auth', ['login']),
+    ...mapActions('$_auth', ['login', 'loading']),
     submit () {
       this.login({
         credentials: this.credentials,

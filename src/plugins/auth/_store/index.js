@@ -5,7 +5,9 @@ import mutations from './mutations';
 const state = {
   user: null,
   authenticated: false,
-  loadingUser: false
+  loadingUser: false,
+  loginInProgress: false,
+  registerInProgress: false
 }
 
 export default (options) => {

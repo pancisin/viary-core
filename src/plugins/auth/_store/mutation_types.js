@@ -1,2 +1,4 @@
 export const LOADING_USER = 'LOADING_USER';
 export const SET_USER = 'SET_USER';
+export const LOGIN_IN_PROGRESS = 'LOGIN_IN_PROGRESS';
+export const REGISTER_IN_PROGRESS = 'REGISTER_IN_PROGRES';

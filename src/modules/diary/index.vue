@@ -44,6 +44,12 @@ export default {
       default () {
         return ''
       }
+    },
+    useLocalDatabase: {
+      type: Function,
+      default () {
+        return _ => false
+      }
     }
   },
   components: {
@@ -56,7 +62,7 @@ export default {
     ...mapGetters('$_diary', ['hasAnyDiary', 'scopedDiary'])
   },
   created () {
-    this.$store.registerModule(MODULE_NAMESPACE, store({ baseUrl: this.baseUrl }));
+    this.$store.registerModule(MODULE_NAMESPACE, store({ baseUrl: this.baseUrl, useLocalDatabase: this.useLocalDatabase }));
     this.$store.dispatch(`${MODULE_NAMESPACE}/initializeDiaries`).then(() => {
       var subscription = null;
 

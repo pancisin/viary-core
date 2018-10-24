@@ -8,5 +8,13 @@ export default {
 
   [types.LOADING_USER] (state, loading_state) {
     state.loadingUser = loading_state;
+  },
+
+  [types.LOGIN_IN_PROGRESS] (state, progress) {
+    state.logingInProgress = progress;
+  },
+
+  [types.REGISTER_IN_PROGRESS] (state, progress) {
+    state.registerInProgress = progress;
   }
 };

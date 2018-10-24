@@ -78,7 +78,9 @@ export default {
 
     submitDayNote (e) {
       this.addDayNote({ 
-        note: e.target[0].value, 
+        note: { 
+          content: e.target[0].value 
+        }, 
         weekNumber: this.day.weekNumber, 
         ordinal: this.day.ordinal,
         year: this.day.year }

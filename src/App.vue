@@ -2,10 +2,6 @@
   <div id="app">
     <div class="container">
       <auth-wrapper>
-        <div class="alert alert-warning mT-15" role="alert" v-if="offlineMode">
-          <strong>Warning!</strong> You've probably lost connection to internet.
-          Therefore application has turned itself into offline mode.
-        </div>
         <diary-module 
           baseUrl="http://localhost:8180" 
           :useLocalDatabase="useLocalDatabase" />
@@ -15,7 +11,7 @@
 </template>
 
 <script>
-import { DiaryModule } from './modules'
+import { DiaryModule } from './modules';
 
 export default {
   name: 'app',

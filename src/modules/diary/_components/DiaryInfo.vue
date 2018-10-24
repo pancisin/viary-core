@@ -4,7 +4,7 @@
     <dropdown
       class="notifications">
       <span slot="link">
-        <span class="lnr lnr-cog fsz-xl"></span>
+        <span class="lnr lnr-cog fsz-xl" :class="{ 'c-red-500' : offlineMode }"></span>
       </span>
 
       <li>
@@ -103,7 +103,7 @@ export default {
   computed: {
     ...mapGetters('$_diary', ['scopedDay', 'scopedDiary']),
     ...mapGetters('$_auth', ['user']),
-    ...mapGetters('$_settings', ['themes']),
+    ...mapGetters('$_settings', ['themes', 'offlineMode']),
     profilePic () {
       return ""
       // return gravatar.url(this.user.email)

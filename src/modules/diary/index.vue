@@ -59,7 +59,20 @@ export default {
   },
   computed: {
     ...mapGetters('$_settings', ['theme', 'creatorMode']),
-    ...mapGetters('$_diary', ['hasAnyDiary', 'scopedDiary'])
+    ...mapGetters('$_diary', ['hasAnyDiary', 'scopedDiary']),
+    offlineMode() {
+      return this.useLocalDatabase()
+    }
+  },
+  watch: {
+    offlineMode (newVal) {
+      if (!newVal) {
+        this.synchronizeDiaries();
+        this.synchronizeNotes();
+      }
+
+      this.switchOfflineMode(newVal);
+    }
   },
   created () {
     this.$store.registerModule(MODULE_NAMESPACE, store({ baseUrl: this.baseUrl, useLocalDatabase: this.useLocalDatabase }));
@@ -103,7 +116,8 @@ export default {
     this.$store.unregisterModule('$_settings');
   },
   methods: {
-    ...mapActions('$_settings', ['switchCreatorMode'])
+    ...mapActions('$_settings', ['switchCreatorMode', 'switchOfflineMode']),
+    ...mapActions('$_diary', ['synchronizeDiaries', 'synchronizeNotes'])
   }
 };
 </script>

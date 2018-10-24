@@ -4,14 +4,16 @@ const types = {
   SET_INIT: 'SET_INIT',
   SET_INIT_IN_PROGRESS: 'SET_INIT_IN_PROGRESS',
   SET_THEME: 'SET_THEME',
-  SET_CREATOR_MODE: 'SET_CREATOR_MODE'
+  SET_CREATOR_MODE: 'SET_CREATOR_MODE',
+  SET_OFFLINE_MODE: 'SET_OFFLINE_MODE'
 }
 
 const state = {
   initialData: {},
   creatorMode: false,
   theme: {},
-  loadingInitialData: false
+  loadingInitialData: false,
+  offlineMode: false
 }
 
 const getters = {
@@ -26,7 +28,8 @@ const getters = {
   //   return {}
   // },
   theme: state => state.theme,
-  creatorMode: state => state.creatorMode
+  creatorMode: state => state.creatorMode,
+  offlineMode: state => state.offlineMode
 }
 
 const actions = ({ baseUrl }) => {
@@ -55,10 +58,15 @@ const actions = ({ baseUrl }) => {
     commit(types.SET_CREATOR_MODE, { state: state || !getters.creatorMode })
   }
 
+  const switchOfflineMode = ({ commit, getters }, offlineMode) => {
+    commit(types.SET_OFFLINE_MODE, { offlineMode: offlineMode || !getters.offlineMode })
+  }
+
   return {
     initializeApplication,
     selectTheme,
-    switchCreatorMode
+    switchCreatorMode,
+    switchOfflineMode
   }
 };
 
@@ -77,6 +85,10 @@ const mutations = {
   
   [types.SET_CREATOR_MODE] (st, { state }) {
     st.creatorMode = state;
+  },
+
+  [types.SET_OFFLINE_MODE] (state, { offlineMode }) {
+    state.offlineMode = offlineMode;
   }
 };
 

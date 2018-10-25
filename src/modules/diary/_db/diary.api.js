@@ -13,34 +13,30 @@ export default () => {
     })
   }
 
-  const postDiary = (diary, success) => {
-    db.post(diary).then(response => {
-      if (success) {
-        success(diary)
-      }
+  const postDiary = diary => {
+    return db.post(diary).then(response => {
+      return Promise.resolve(diary)
     })
   }
 
-  const putDiary = (diaryId, diary, success) => {
-    db.put(diary).then(response => {
-      if (success) {
-        success(diary)
-      }
+  const putDiary = (diaryId, diary) => {
+    return db.get(diaryId).then(response => {
+      return db.put({
+        ...diary,
+        _id: response._id,
+        _rev: response._rev
+      }).then(_ => {
+        return Promise.resolve(diary)
+      })
     })
   }
 
-  const getDiary = (diaryId, success) => {
-    db.get(diaryId).then(response => {
-      success(response);
-    })
-  }
+  const getDiary = diaryId => db.get(diaryId)
 
-  const deleteDiary = (diaryId, success) => {
-    db.get(diaryId).then(diary => {
-      db.remove(diary).then(_ => {
-        if (success) {
-          success(diaryId)
-        }
+  const deleteDiary = diaryId => {
+    return db.get(diaryId).then(diary => {
+      return db.remove(diary).then(_ => {
+        return Promise.resolve(diaryId)
       })
     })
   }

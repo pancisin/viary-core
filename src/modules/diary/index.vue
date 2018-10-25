@@ -36,6 +36,10 @@ const MODULE_NAMESPACE = '$_diary';
 import UnsplashApi from './_api/unsplash.api'
 import { mapGetters, mapActions } from 'vuex'
 
+import ErrorInterceptor from './_api/error.interceptor';
+
+import Vue from 'vue';
+
 export default {
   name: 'DiaryContainer',
   props: {
@@ -76,6 +80,17 @@ export default {
   },
   created () {
     this.$store.registerModule(MODULE_NAMESPACE, store({ baseUrl: this.baseUrl, useLocalDatabase: this.useLocalDatabase }));
+    this.$store.registerModule('$_settings', SettingsModule({ baseUrl: this.baseUrl }));
+    Vue.http.interceptors.push(ErrorInterceptor(this.$store));
+    this.$store.dispatch('$_settings/initializeApplication').then(() => {
+      this.$watch('theme', newVal => {
+        const el = this.$refs.calendarColumn;
+        el.style.background = `url(${newVal.imageUrl})`
+      }, {
+        immediate: true
+      })
+    })
+
     this.$store.dispatch(`${MODULE_NAMESPACE}/initializeDiaries`).then(() => {
       var subscription = null;
 
@@ -95,16 +110,6 @@ export default {
         this.switchCreatorMode(true)
       })
     });
-
-    this.$store.registerModule('$_settings', SettingsModule({ baseUrl: this.baseUrl }));
-    this.$store.dispatch('$_settings/initializeApplication').then(() => {
-      this.$watch('theme', newVal => {
-        const el = this.$refs.calendarColumn;
-        el.style.background = `url(${newVal.imageUrl})`
-      }, {
-        immediate: true
-      })
-    })
 
     // UnsplashApi().getImage('sgpLdF0aSno', image => {
     // UnsplashApi().getImageOfDay(image => {

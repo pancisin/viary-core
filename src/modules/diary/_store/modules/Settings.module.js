@@ -5,7 +5,8 @@ const types = {
   SET_INIT_IN_PROGRESS: 'SET_INIT_IN_PROGRESS',
   SET_THEME: 'SET_THEME',
   SET_CREATOR_MODE: 'SET_CREATOR_MODE',
-  SET_OFFLINE_MODE: 'SET_OFFLINE_MODE'
+  SET_OFFLINE_MODE: 'SET_OFFLINE_MODE',
+  SET_OFFLINE_RECOVERY_MODE: 'SET_OFFLINE_RECOVERY_MODE'
 }
 
 const state = {
@@ -13,7 +14,8 @@ const state = {
   creatorMode: false,
   theme: {},
   loadingInitialData: false,
-  offlineMode: false
+  offlineMode: false,
+  offlineRecoveryMode: false
 }
 
 const getters = {
@@ -29,7 +31,8 @@ const getters = {
   // },
   theme: state => state.theme,
   creatorMode: state => state.creatorMode,
-  offlineMode: state => state.offlineMode
+  offlineMode: state => state.offlineMode,
+  offlineRecoveryMode: state => state.offlineRecoveryMode
 }
 
 const actions = ({ baseUrl }) => {
@@ -62,6 +65,10 @@ const actions = ({ baseUrl }) => {
     commit(types.SET_OFFLINE_MODE, { offlineMode: offlineMode || !getters.offlineMode })
   }
 
+  const switchOfflineRecoveryMode = ({ commit, getters }, offlineRecoveryMode) => {
+    commit(types.SET_OFFLINE_RECOVERY_MODE, { offlineRecoveryMode: offlineRecoveryMode || !getters.offlineRecoveryMode })
+  }
+
   return {
     initializeApplication,
     selectTheme,
@@ -89,6 +96,10 @@ const mutations = {
 
   [types.SET_OFFLINE_MODE] (state, { offlineMode }) {
     state.offlineMode = offlineMode;
+  },
+
+  [types.SET_OFFLINE_RECOVERY_MODE] (state, { offlineRecoveryMode }) {
+    state.offlineRecoveryMode = offlineRecoveryMode;
   }
 };
 

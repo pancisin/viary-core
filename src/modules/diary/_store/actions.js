@@ -13,15 +13,15 @@ export default (options) => {
   const baseUrl = options.baseUrl || '';
   const useLocalDatabase = options.useLocalDatabase; // try this as function
   const disableWeatherData = options.disableWeatherData; // not implemented
-  const offlineMode = options.offlineMode; // not implemented
+  // const offlineMode = options.offlineMode; // not implemented
 
   const pouch = {
     ...DiaryPouchApi(),
     ...NotePouchApi()
   }
 
-  const api = _ => {
-    return useLocalDatabase() ? pouch : {
+  const api = offlineMode => {
+    return offlineMode ? pouch : {
       ...DiaryApi(baseUrl),
       ...NoteApi(baseUrl),
     }
@@ -29,20 +29,20 @@ export default (options) => {
 
   const WeatherApiInstance = WeatherApi();
 
-  const initializeDiaries = ({ commit, dispatch }) => {
+  const initializeDiaries = ({ commit, dispatch, rootGetters }) => {
     commit(types.SET_LOADING_DIARY, true);
-    return new Promise(resolve => {
-      api().getDiaries().then(diaries => {
-        commit(types.SET_DIARIES, { diaries })
-        commit(types.SET_LOADING_DIARY, false);  
+    const offlineMode = rootGetters['$_settings/offlineMode'];
+
+    return api(offlineMode).getDiaries().then(diaries => {
+      commit(types.SET_DIARIES, { diaries })
+      commit(types.SET_LOADING_DIARY, false);  
+    
+      if (!offlineMode) {
+        dispatch('synchronizeDiaries');
+        dispatch('synchronizeNotes');
+      }
       
-        if (!useLocalDatabase()) {
-          dispatch('synchronizeDiaries');
-          dispatch('synchronizeNotes');
-        }
-        
-        resolve(diaries)
-      })
+      return Promise.resolve(diaries)
     })
   }
 
@@ -89,31 +89,30 @@ export default (options) => {
     })
   }
 
-  const createDiary = ({ commit, dispatch }, diary) => {
+  const createDiary = ({ commit, dispatch, rootGetters }, diary) => {
     commit(types.SET_LOADING_DIARY, true);
-    return new Promise((resolve, reject) => {
 
-      if (diary.name == null || diary.name === '') {
-        reject(new Error('Diary is not properly named !'));
-        return;
-      }
+    if (diary.name == null || diary.name === '') {
+      return Promise.reject('Diary is not properly named !')
+    }
 
-      api().postDiary(diary, result => {
-        commit(types.ADD_DIARY, { diary: { ...result} })
-        dispatch('scopeDiary', { slug: result.slug })
-        commit(types.SET_LOADING_DIARY, false);
-        resolve(result)
-      })
+    return api(rootGetters['$_settings/offlineMode']).postDiary(diary).then(result => {
+      commit(types.ADD_DIARY, { diary: { ...result} })
+      dispatch('scopeDiary', { slug: result.slug })
+      commit(types.SET_LOADING_DIARY, false);
+
+      return Promise.resolve(result)
     })
   }
 
-  const updateDiary = ({ commit }, diary) => {
+  const updateDiary = ({ commit, rootGetters }, diary) => {
     commit(types.SET_LOADING_DIARY, true);
-    return new Promise((resolve, reject) => {
-      api().putDiary(diary.slug, diary, result => {
-        commit(types.UPDATE_DIARY, { diary: result })
-        commit(types.SET_LOADING_DIARY, false);
-      })
+    
+    return api(rootGetters['$_settings/offlineMode']).putDiary(diary.slug, diary).then(result => {
+      commit(types.UPDATE_DIARY, { diary: result })
+      commit(types.SET_LOADING_DIARY, false);
+
+      return Promise.resolve(result)
     })
   }
 
@@ -145,26 +144,22 @@ export default (options) => {
   }
 
   const scopeDiary = ({ commit, getters, dispatch }, { slug, scopeDate }) => {
-    return new Promise((resolve, reject) => {
+    if (getters.diaries.length === 0) {
+      Promise.reject('There are any diaries in user context.')
+    }
 
-      if (getters.diaries.length === 0) {
-        reject(new Error('There are any diaries in user context.'));
-        return;
-      }
+    var diary = getters.diaries[0] || {}
 
-      var diary = getters.diaries[0] || {}
+    const idx = getters.diaries.findIndex(d => d.slug === slug)
+    if (idx != -1) {
+      diary = getters.diaries[idx]
+    }
 
-      const idx = getters.diaries.findIndex(d => d.slug === slug)
-      if (idx != -1) {
-        diary = getters.diaries[idx]
-      }
+    commit(types.SCOPE_DIARY, { diary });
 
-      commit(types.SCOPE_DIARY, { diary });
-
-      const day = scopeDate != null ? DateTime.fromSQL(scopeDate) : DateTime.local();
-      dispatch('scopeDay', { day, force: true }).then(() => {
-        resolve(diary);
-      })
+    const day = scopeDate != null ? DateTime.fromSQL(scopeDate) : DateTime.local();
+    dispatch('scopeDay', { day, force: true }).then(() => {
+      Promise.resolve(diary)
     })
   }
 
@@ -187,11 +182,10 @@ export default (options) => {
       }
 
       if (weekUpdate) {
-        const promises = [dispatch('loadWeekData', { weekNumber: day.weekNumber, year: day.year })]
-
-        if (!useLocalDatabase() && !disableWeatherData) {
-          promises.push(dispatch('loadWeekWeatherData', day.weekNumber))
-        }
+        const promises = [
+          dispatch('loadWeekData', { weekNumber: day.weekNumber, year: day.year }),
+          dispatch('loadWeekWeatherData', day.weekNumber)
+        ]
 
         Promise.all(promises).then(() => {
           resolveCallback(day.toSQL())
@@ -202,20 +196,21 @@ export default (options) => {
     })
   }
 
-  const loadWeekData = ({ commit, getters }, { weekNumber, year }) => {
+  const loadWeekData = ({ commit, getters, rootGetters, dispatch }, { weekNumber, year }) => {
     const week = DateTime.fromObject({ weekNumber })
     // if (getters.getDiaryWeek(weekNumber) == null) {
       
-    return new Promise(resolve => {
-      const diarySlug = getters.scopedDiary.slug;
-      api().getDays(diarySlug, {
-        from: week.startOf('week').toFormat('MM/dd/yyyy'),
-        to: week.endOf('week').toFormat('MM/dd/yyyy')
-      }, days => {
-        // commit(types.SET_SCOPED_DIARY_DAYS, { days });
-        commit(types.ADD_WEEK_TO_SCOPE, { weekNumber, year, days: days });
-        
-        days.flatMap(d => { 
+    const diarySlug = getters.scopedDiary.slug;
+    const offlineMode = rootGetters['$_settings/offlineMode'];
+
+    return api(offlineMode).getDays(diarySlug, {
+      from: week.startOf('week').toFormat('MM/dd/yyyy'),
+      to: week.endOf('week').toFormat('MM/dd/yyyy')
+    }).then(days => {
+      // commit(types.SET_SCOPED_DIARY_DAYS, { days });
+      
+      if (!offlineMode) {
+        days.flatMap(d => {
           return d.notes.map(n => {
             return {
               ...n,
@@ -227,39 +222,43 @@ export default (options) => {
         }).forEach(note => {
           pouch.syncUpdateNote(note.id, note)
         })
-        
-        resolve();
-      })
+      }
+
+      return Promise.resolve(days)
+    }).catch(_ => {
+      // return dispatch('loadWeekData', { weekNumber, year })
+      return []
+    }).then(days => {
+      commit(types.ADD_WEEK_TO_SCOPE, { weekNumber, year, days });
     })
     // }
   }
 
-  const loadWeekWeatherData = ({ commit, getters, dispatch }) => {
+  const loadWeekWeatherData = ({ commit, getters, dispatch, rootGetters }) => {
     const cityName = 'kosice,sk';
+    const offlineMode = rootGetters['$_settings/offlineMode']
 
-    return new Promise(resolve => {
-      WeatherPouchApi().getForecastData(cityName, getters.scopedDay.toSQLDate()).then(data => {
-        const result = data.reduce((acc, cur) => {
-          acc[cur._id] = cur;
-          return acc;
-        }, {})
+    return WeatherPouchApi().getForecastData(cityName, getters.scopedDay.toSQLDate()).then(data => {
+      const result = data.reduce((acc, cur) => {
+        acc[cur._id] = cur;
+        return acc;
+      }, {})
 
-        return result
-      }).catch(_ => {
-        if (useLocalDatabase()) {
-          return Promise.reject();
-        }
+      return result
+    }).catch(_ => {
+      if (offlineMode) {
+        return Promise.reject();
+      }
 
-        return dispatch('synchronizeWeather').then(data => {
-          WeatherPouchApi().storeWeatherData(data)
-          return Promise.resolve(data)
-        })
-      }).then(result => {
-        commit(types.SET_FORECAST_DATA, result)
-        resolve(result)
-      }).catch(_ => {
-        console.warn('Weather data are not loaded to database and server is not reachable.')
+      return dispatch('synchronizeWeather').then(data => {
+        WeatherPouchApi().storeWeatherData(data)
+        return Promise.resolve(data)
       })
+    }).then(result => {
+      commit(types.SET_FORECAST_DATA, result)
+      resolve(result)
+    }).catch(_ => {
+      // console.warn('Weather data are not loaded to database and server is not reachable.')
     })
   }
 
@@ -286,50 +285,51 @@ export default (options) => {
     })
   }
 
-  const updateDayNote = ({ commit, getters }, { note, weekNumber, ordinal, year }) => {
-    return new Promise(resolve => {
-      commit(types.SET_LOADING_DIARY, true);
-      api().updateNote(note.id, {
-        ...note,
-        date_number: ordinal,
-        year
-      }, result => {
-        commit(types.UPDATE_NOTE, { weekNumber: weekNumber, ordinal, year, note: result })
-        commit(types.SET_LOADING_DIARY, false);
-        pouch.syncUpdateNote(result.id, { ...result, date_number: ordinal, year })
-        resolve(result)
-      })
+  const updateDayNote = ({ commit, getters, rootGetters }, { note, weekNumber, ordinal, year }) => {
+    commit(types.SET_LOADING_DIARY, true);
+    return api(rootGetters['$_settings/offlineMode']).updateNote(note.id, {
+      ...note,
+      date_number: ordinal,
+      year
+    }).then(result => {
+      commit(types.UPDATE_NOTE, { weekNumber: weekNumber, ordinal, year, note: result })
+      commit(types.SET_LOADING_DIARY, false);
+      pouch.syncUpdateNote(result.id, { ...result, date_number: ordinal, year })
+
+      return Promise.resolve(result)
     })
   }
 
-  const addDayNote = ({ commit, getters }, { note, weekNumber, ordinal, year }) => {
+  const addDayNote = ({ commit, getters, dispatch, rootGetters }, { note, weekNumber, ordinal, year }) => {
     const scopedDay = getters.scopedDay;
 
-    return new Promise(resolve => {
-      commit(types.SET_LOADING_DIARY, true);
-      api().postNote(getters.scopedDiary.slug, {
-        ...note,
-        ordinal,
-        year: scopedDay.year,
-      }, result => {
-        commit(types.ADD_NOTE, { note: result, ordinal, weekNumber, year })
-        commit(types.SET_LOADING_DIARY, false);
-        pouch.syncUpdateNote(result.id, { ...result, date_number: ordinal, year })
-        resolve()
-      })
+    commit(types.SET_LOADING_DIARY, true);
+
+    return api(rootGetters['$_settings/offlineMode']).postNote(getters.scopedDiary.slug, {
+      ...note,
+      ordinal,
+      year: scopedDay.year,
+    }).then(result => {
+      pouch.syncUpdateNote(result.id, { ...result, date_number: ordinal, year })
+      commit(types.ADD_NOTE, { note: result, ordinal, weekNumber, year })
+      return result
+    }).catch(_ => {
+      return null;
+    }).then(result => {
+      commit(types.SET_LOADING_DIARY, false);
+      return Promise.resolve(result)
     })
   }
 
-  const deleteDayNote = ({ commit, getters }, { noteId, weekNumber, year, ordinal }) => {
-    return new Promise(resolve => {
-      commit(types.SET_LOADING_DIARY, true);
-      api().deleteNote(noteId).then(result => {
-        commit(types.DELETE_NOTE, { weekNumber, ordinal, year, noteId })
-        commit(types.SET_LOADING_DIARY, false);
-        resolve(result)
-      }).catch(err => {
-        console.error(err)
-      })
+  const deleteDayNote = ({ commit, getters, rootGetters }, { noteId, weekNumber, year, ordinal }) => {
+    commit(types.SET_LOADING_DIARY, true);
+    return api(rootGetters['$_settings/offlineMode']).deleteNote(noteId).then(result => {
+      commit(types.DELETE_NOTE, { weekNumber, ordinal, year, noteId })
+    }).catch(_ => {
+      return null      
+    }).then(result => {
+      commit(types.SET_LOADING_DIARY, false);
+      return Promise.resolve(result)
     })
   }
 

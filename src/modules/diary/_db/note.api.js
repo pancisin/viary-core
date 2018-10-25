@@ -10,8 +10,8 @@ export default _ => {
 
   const change = ChangeApi();
 
-  const getDays = (diaryId, filter, success) => {
-    db.find({
+  const getDays = (diaryId, filter) => {
+    return db.find({
       selector: {
         diary_id: diaryId,
         date_number: {
@@ -46,11 +46,11 @@ export default _ => {
         result.push(d[prop])
       }
 
-      success(result)
+      return Promise.resolve(result)
     })
   }
 
-  const postNote = (diaryId, { ordinal, year, content }, success) => {
+  const postNote = (diaryId, { ordinal, year, content }) => {
     const note = {
       diary_id: diaryId,
       date_number: ordinal,
@@ -58,61 +58,57 @@ export default _ => {
       content
     }
 
-    db.post(note).then(response => {
+    return db.post(note).then(response => {
       const newNote = {
         ...note,
         id: response.id,
       }
 
       change.createNote(newNote)
-      success(newNote)
+      return Promise.resolve(newNote)
     }) 
   }
   
-  const syncUpdateNote = (noteId, note, success) => {
-    const callback = success || function () {}
-
-    db.get(noteId).then(pn => {
-      db.put({
+  const syncUpdateNote = (noteId, note) => {
+    return db.get(noteId).then(pn => {
+      return {
         ...note,
         _id: pn._id,
         _rev: pn._rev
-      }).then(_ => {
-        callback(note);
-      })
+      }
     }).catch(err => {
       if (err.status === 404) {
-        db.put({
+        return {
           ...note,
           _id: note.id
-        }).then(_ => {
-          callback(note)
-        })
+        }
       }
+    }).then(pn => {
+      return db.put(pn).then(_ => {
+        return Promise.resolve(note)
+      })
     })
   }
 
-  const updateNote = (noteId, note, success) => {
-    const callback = success || function() {}
-
-    db.get(noteId).then(pn => {
-      db.put({
+  const updateNote = (noteId, note) => {
+    return db.get(noteId).then(pn => {
+      return {
         ...note,
         _id: pn._id,
         _rev: pn._rev
-      }).then(_ => {
-        change.updateNote(noteId, note);
-        callback(note);
-      })
+      }
     }).catch(err => {
       if (err.status === 404) {
-        db.put({
+        return {
           ...note,
           _id: note.id
-        }).then(_ => {
-          callback(note)
-        })
+        }
       }
+    }).then(pn => {
+      return db.put(pn).then(_ => {
+        change.updateNote(noteId, note);
+        return Promise.resolve(note)
+      })
     })
   }
 
@@ -126,11 +122,7 @@ export default _ => {
     }) 
   }
 
-  const getNote = (noteId, success) => {
-    db.get(noteId).then(note => {
-      success(note);
-    })
-  }
+  const getNote = (noteId) => db.get(noteId)
 
   return {
     getDays,

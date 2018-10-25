@@ -9,40 +9,40 @@ export default (baseUrl) => {
     });
   }
 
-  const postDiary = (diary, success) => {
-    Vue.http.post(`${ME_API_URL}/diary`, diary).then(response => {
-      success(response.body);
+  const postDiary = diary => {
+    return Vue.http.post(`${ME_API_URL}/diary`, diary).then(response => {
+      return Promise.resolve(response.body);
     })
   }
 
-  const putDiary = (diaryId, diary, success) => {
-    Vue.http.put(`${DIARY_API_URL}/${diaryId}`, diary).then(response => {
-      success(response.body);
+  const putDiary = (diaryId, diary) => {
+    return Vue.http.put(`${DIARY_API_URL}/${diaryId}`, diary).then(response => {
+      return Promise.resolve(response.body);
     })
   }
 
-  const getDiary = (diaryId, success) => {
-    Vue.http.get(`${DIARY_API_URL}/${diaryId}`).then(response => {
-      success(response.body);
+  const getDiary = diaryId => {
+    return Vue.http.get(`${DIARY_API_URL}/${diaryId}`).then(response => {
+      return Promise.resolve(response.body);
     })
   }
 
-  const getDays = (diaryId, filter, success) => {
-    Vue.http.get(`${DIARY_API_URL}/${diaryId}/day`, {
+  const getDays = (diaryId, filter) => {
+    return Vue.http.get(`${DIARY_API_URL}/${diaryId}/day`, {
       params: {
         from: filter.from || null,
         to: filter.to || null
       }
     }).then(response => {
-      success(response.body)
+      return Promise.resolve(response.body)
     })
   }
 
-  const postNote = (diaryId, { ordinal, year, content }, success) => {
-    Vue.http.post(`${DIARY_API_URL}/${diaryId}/day/${ordinal}/${year}/note`, {
+  const postNote = (diaryId, { ordinal, year, content }) => {
+    return Vue.http.post(`${DIARY_API_URL}/${diaryId}/day/${ordinal}/${year}/note`, {
       content
     }).then(response => {
-      success(response.body)
+      return Promise.resolve(response.body)
     })
   }
 

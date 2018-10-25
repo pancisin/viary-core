@@ -25,7 +25,7 @@ export default {
   },
   mounted () {
     const updateOnlineStatus = e => {
-      // this.offlineMode = e.type.toLowerCase() === 'offline';
+      this.offlineMode = e.type.toLowerCase() === 'offline';
     }
 
     window.addEventListener('online',  updateOnlineStatus);

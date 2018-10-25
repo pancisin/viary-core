@@ -54,30 +54,35 @@ export default (options) => {
     const diaries = getters.diaries;
     const promises = [];
     
-    pouch.getDiaries().then(dbDiaries => {
+    return pouch.getDiaries().then(dbDiaries => {
+      const promises = []
 
       // Store remote only diaries locally.
       diaries
         .filter(d => !dbDiaries.map(dbd => dbd._id).includes(d.slug))
         .forEach(d => {
-          pouch.postDiary({
+          let p = pouch.postDiary({
             ...d,
             _id: d.slug
           })
+
+          promises.push(p)
         })
 
       // Post local only diaries to remote.
       dbDiaries
         .filter(dbd => !diaries.map(d => d.slug).includes(dbd._id))
         .forEach(dbd => {
-          api().postDiary(dbd, diary => {
-            pouch.deleteDiary(dbd._id)
-            pouch.putDiary({
-              ...diary,
-              _id: diary.slug
-            })
+          let p = api().postDiary(dbd, diary => {
+            return Promise.all([
+              pouch.deleteDiary(dbd._id),
+              pouch.putDiary(diary.slug, diary)
+            ])
+
             commit(types.ADD_DIARY, { diary })
           })
+
+          promises.push(p)
         })
 
       // Synchronize those that are on both sources.
@@ -86,6 +91,8 @@ export default (options) => {
         .forEach(dbd => {
 
         })
+
+      return Promise.all(promises)
     })
   }
 
@@ -334,27 +341,32 @@ export default (options) => {
   }
 
   const synchronizeNotes = ({ commit, dispatch }) => {
-    ChangePouchApi().getChanges(changes => {
+    return ChangePouchApi().getChanges().then(changes => {
       const operationMapping = {
         CREATE: 'addDayNote',
         UPDATE: 'updateDayNote',
         DELETE: 'deleteDayNote'
       }
 
+      const promises = []
       changes.forEach(change => {
         const note = change.payload;
         const date = DateTime.fromObject({ ordinal: note.date_number, year: note.year })
 
-        dispatch(operationMapping[change.operation], {
+        let p = dispatch(operationMapping[change.operation], {
           noteId: note.id,
           note: note,
           ordinal: note.date_number,
           weekNumber: date.weekNumber,
           year: note.year
         }).then(result => {
-          ChangePouchApi().deleteChange(change._id)
+          return ChangePouchApi().deleteChange(change._id)
         })
+
+        promises.push(p)
       })
+
+      return Promise.all(promises)
     })
   }
 

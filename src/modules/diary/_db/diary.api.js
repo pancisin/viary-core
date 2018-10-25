@@ -20,13 +20,20 @@ export default () => {
   }
 
   const putDiary = (diaryId, diary) => {
-    return db.get(diaryId).then(response => {
-      return db.put({
+    return db.get(diaryId).then(nd => {
+      return {
         ...diary,
-        _id: response._id,
-        _rev: response._rev
-      }).then(_ => {
-        return Promise.resolve(diary)
+        _id: nd._id,
+        _rev: nd._rev
+      }
+    }).catch(_ => {
+      return {
+        ...diary,
+        _id: diary.id
+      }
+    }).then(nd => {
+      return db.put(nd).then(_ => {
+        return Promise.resolve(nd)
       })
     })
   }

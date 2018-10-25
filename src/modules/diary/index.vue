@@ -71,8 +71,12 @@ export default {
   watch: {
     offlineMode (newVal) {
       if (!newVal) {
-        this.synchronizeDiaries();
-        this.synchronizeNotes();
+        this.synchronizeDiaries().then(_ => {
+
+        });
+        this.synchronizeNotes().then(_ => {
+
+        });
       }
 
       this.switchOfflineMode(newVal);

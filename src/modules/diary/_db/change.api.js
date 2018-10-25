@@ -9,38 +9,36 @@ const operation = {
 export default () => {
   var db = new PouchDB('changes_db');
   
-  const getChanges = success => {
-    db.allDocs({
+  const getChanges = _ => {
+    return db.allDocs({
       include_docs: true,
       attachments: true
     }).then(response => {
       const changes = response.rows.map(row => row.doc);
-      success(changes);
+      return Promise.resolve(changes)
     })
   }
 
-  const createNote = (note, success) => {
+  const createNote = note => {
     const change = {
       _id: note.id,
       operation: operation.CREATE,
       payload: note
     }
 
-    db.put(change).then(_ => {
-      if (success) {
-        success(change);
-      }
+    return db.put(change).then(_ => {
+      return Promise.resolve(change)
     })
   }
 
-  const updateNote = (noteId, note, success) => {
+  const updateNote = (noteId, note) => {
     const change = {
       _id: noteId,
       operation: operation.UPDATE,
       payload: note
     }
 
-    db.get(noteId).then(response => {
+    return db.get(noteId).then(response => {
       return {
         ...change,
         _rev: response._rev
@@ -48,22 +46,20 @@ export default () => {
     }).catch(response => {
       return change;
     }).then(ch => {
-      db.put(ch).then(_ => {
-        if (success) {
-          success(ch);
-        }
+      return db.put(ch).then(_ => {
+        return Promise.resolve(ch)
       })
     })
   }
 
-  const deleteNote = (noteId, note, success) => {
+  const deleteNote = (noteId, note) => {
     const change = {
       _id: noteId,
       operation: operation.DELETE,
       payload: note
     }
 
-    db.get(noteId).then(response => {
+    return db.get(noteId).then(response => {
       return {
         ...change,
         _rev: response._rev
@@ -71,22 +67,17 @@ export default () => {
     }).catch(_ => {
       return change;
     }).then(ch => {
-      db.put(ch).then(_ => {
-        if (success) {
-          success(ch);
-        }
+      return db.put(ch).then(_ => {
+        return Promise.resolve(ch)
       })
     })
   }
 
-  const deleteChange = (changeId, success) => {
-    db.get(changeId).then(change => {
-      console.warn(change)
+  const deleteChange = changeId => {
+    return db.get(changeId).then(change => {
       return db.remove(change._id, change._rev)
     }).then(_ => {
-      if (success) {
-        success(changeId)
-      }
+      return Promise.resolve(changeId)
     })
   }
 

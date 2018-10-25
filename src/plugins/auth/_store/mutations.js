@@ -11,7 +11,7 @@ export default {
   },
 
   [types.LOGIN_IN_PROGRESS] (state, progress) {
-    state.logingInProgress = progress;
+    state.loginInProgress = progress;
   },
 
   [types.REGISTER_IN_PROGRESS] (state, progress) {

@@ -25,7 +25,8 @@ export default {
     return Array.from({ length: count || 7 }, (v, i) => i).map(i => {
       const d = week.plus({ days: i })
       const c = daysContent.filter(dc => dc.date_number === d.ordinal)[0]
-      const weatherData = getters.forecastData.filter(w => DateTime.fromMillis(w.dt * 1000).toSQLDate() === d.toSQLDate());
+      // const weatherData = getters.forecastData.filter(w => DateTime.fromMillis(w.dt * 1000).toSQLDate() === d.toSQLDate());
+      const weatherData = getters.forecastData[d.toSQLDate()]
 
       Object.assign(d, { 
         weatherData,

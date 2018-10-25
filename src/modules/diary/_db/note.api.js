@@ -116,11 +116,12 @@ export default _ => {
     })
   }
 
-  const deleteNote = (noteId, success, error) => {
-    db.get(noteId).then(note => {
-      db.remove(note).then(_ => {
+  const deleteNote = noteId => {
+    return db.get(noteId).then(note => {
+      return db.remove(note).then(_ => {
         change.deleteNote(noteId, note);
-        success(noteId)
+      }).then(_ => {
+        return Promise.resolve(noteId)
       })
     }) 
   }

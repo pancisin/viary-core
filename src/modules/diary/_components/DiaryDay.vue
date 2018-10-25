@@ -101,9 +101,10 @@ export default {
     },
 
     dayWeather (day) {
-      const idx = Math.floor(day.weatherData.length / 2)
-
-      let data = day.weatherData[idx];
+      // const idx = Math.floor(day.weatherData.length / 2)
+      // let data = day.weatherData[idx];
+      
+      let data = day.weatherData;
       let iconIdx = '';
 
       if (data != null) {

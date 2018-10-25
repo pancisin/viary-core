@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import { Loading } from '@/directives';
 
 export default {
@@ -81,8 +81,11 @@ export default {
   directives: {
     Loading
   },
+  computed: {
+    ...mapGetters('$_auth', ['loading'])
+  },
   methods: {
-    ...mapActions('$_auth', ['login', 'loading']),
+    ...mapActions('$_auth', ['login']),
     submit () {
       this.login({
         credentials: this.credentials,

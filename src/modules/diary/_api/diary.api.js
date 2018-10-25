@@ -3,16 +3,10 @@ export default (baseUrl) => {
   const DIARY_API_URL = `${baseUrl}/api/v1/diary`;
   const ME_API_URL = `${baseUrl}/api/v1/user/me`;
 
-  const getDiaries = (success) => {
-    return new Promise(resolve => {
-      Vue.http.get(`${ME_API_URL}/diary`).then(response => {
-        if (success) {
-          success(response.body);
-        }
-        
-        resolve(response.body);
-      })
-    })
+  const getDiaries = _ => {
+    return Vue.http.get(`${ME_API_URL}/diary`).then(response => {
+      return Promise.resolve(response.body);
+    });
   }
 
   const postDiary = (diary, success) => {

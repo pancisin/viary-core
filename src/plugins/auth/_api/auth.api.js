@@ -49,9 +49,13 @@ export default baseUrl => {
       });
   }
 
-  const register = (user, success) => {
+  const register = (user, success, error) => {
     Vue.http.post(`${API_URL}/api/register`, user).then(response => {
       success(response.body);
+    }).catch(err => {
+      if (error) {
+        error(err)
+      }
     });
   }
 

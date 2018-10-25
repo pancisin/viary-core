@@ -4,6 +4,7 @@ import NoteApi from '../_api/note.api';
 import NotePouchApi from '../_db/note.api';
 import ChangePouchApi from '../_db/change.api';
 import WeatherApi from '../_api/weather.api';
+import WeatherPouchApi from '../_db/weather.api';
 import * as types from './mutation-types';
 
 import { DateTime } from 'luxon';
@@ -31,7 +32,7 @@ export default (options) => {
   const initializeDiaries = ({ commit, dispatch }) => {
     commit(types.SET_LOADING_DIARY, true);
     return new Promise(resolve => {
-      api().getDiaries(diaries => {
+      api().getDiaries().then(diaries => {
         commit(types.SET_DIARIES, { diaries })
         commit(types.SET_LOADING_DIARY, false);  
       
@@ -53,7 +54,7 @@ export default (options) => {
     const diaries = getters.diaries;
     const promises = [];
     
-    pouch.getDiaries(dbDiaries => {
+    pouch.getDiaries().then(dbDiaries => {
 
       // Store remote only diaries locally.
       diaries
@@ -233,15 +234,55 @@ export default (options) => {
     // }
   }
 
-  // weekNumber param
-  const loadWeekWeatherData = ({ commit }) => {
-    return new Promise(resolve => {
-      WeatherApiInstance.getForecastData('kosice,sk', weather => {
-        commit(types.SET_FORECAST_DATA, weather.list)
-        resolve(weather)
-      }, () => {
+  const loadWeekWeatherData = ({ commit, getters, dispatch }) => {
+    const cityName = 'kosice,sk';
 
+    return new Promise(resolve => {
+      WeatherPouchApi().getForecastData(cityName, getters.scopedDay.toSQLDate()).then(data => {
+        const result = data.reduce((acc, cur) => {
+          acc[cur._id] = cur;
+          return acc;
+        }, {})
+
+        return result
+      }).catch(_ => {
+        if (useLocalDatabase()) {
+          return Promise.reject();
+        }
+
+        return dispatch('synchronizeWeather').then(data => {
+          WeatherPouchApi().storeWeatherData(data)
+          return Promise.resolve(data)
+        })
+      }).then(result => {
+        commit(types.SET_FORECAST_DATA, result)
+        resolve(result)
+      }).catch(_ => {
+        console.warn('Weather data are not loaded to database and server is not reachable.')
       })
+    })
+  }
+
+  const synchronizeWeather = ({ commit, getters }) => {
+    return WeatherApiInstance.getForecastData('kosice,sk').then(weather => {
+      const days = weather.list.reduce((acc, cur) => {
+        const sqlDate = DateTime.fromMillis(cur.dt * 1000).toSQLDate();
+        if (acc[sqlDate] == null) {
+          acc[sqlDate] = [ cur ]
+        } else {
+          acc[sqlDate].push(cur)
+        }
+        
+        return acc;
+      }, {})
+      
+      const result = {};
+      for (let d in days) {
+        const idx = Math.floor(days[d].length / 2)
+        result[d] = days[d][idx]
+      }
+      
+      return Promise.resolve(result)
     })
   }
 
@@ -282,11 +323,11 @@ export default (options) => {
   const deleteDayNote = ({ commit, getters }, { noteId, weekNumber, year, ordinal }) => {
     return new Promise(resolve => {
       commit(types.SET_LOADING_DIARY, true);
-      api().deleteNote(noteId, result => {
+      api().deleteNote(noteId).then(result => {
         commit(types.DELETE_NOTE, { weekNumber, ordinal, year, noteId })
         commit(types.SET_LOADING_DIARY, false);
         resolve(result)
-      }, err => {
+      }).catch(err => {
         console.error(err)
       })
     })
@@ -335,6 +376,7 @@ export default (options) => {
     flushDiaries,
     updateDayNote,
     synchronizeNotes,
-    deleteDayNote
+    deleteDayNote,
+    synchronizeWeather
   }
 }

@@ -18,15 +18,16 @@ export default ({ baseUrl, onlogout }) => {
         commit(types.LOGIN_IN_PROGRESS, false);
         dispatch('initializeUser').then(resolve);
       }, error => {
+        commit(types.LOGIN_IN_PROGRESS, false);
         reject(error)
       });
     });
   }
 
   const register = ({ dispatch, commit }, user) => {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       commit(types.REGISTER_IN_PROGRESS, true);
-      Api.register(user, () => {
+      Api.register(user, _ => {
         commit(types.REGISTER_IN_PROGRESS, false);
         dispatch('login', {
           credentials: {
@@ -35,6 +36,9 @@ export default ({ baseUrl, onlogout }) => {
           },
           remember: true
         }).then(resolve);
+      }, err => {
+        commit(types.REGISTER_IN_PROGRESS, false);
+        reject(err)
       });
     });
   }

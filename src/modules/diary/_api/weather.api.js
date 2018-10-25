@@ -19,8 +19,8 @@ export default () => {
     // })
   }
 
-  const getForecastData = (cityName, success, error) => {
-    Vue.http.get(`${WEATHER_API_URL}/forecast`, {
+  const getForecastData = cityName => {
+    return Vue.http.get(`${WEATHER_API_URL}/forecast`, {
       before (request) {
         request.headers.delete('Authorization');
       },
@@ -29,11 +29,7 @@ export default () => {
         q: cityName
       }
     }).then(response => {
-      success(response.body)
-    }).catch(err => {
-      if (error) {
-        error(err)
-      }
+      return Promise.resolve(response.body)
     })
   }
 

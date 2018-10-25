@@ -3,13 +3,13 @@ import PouchDB from 'pouchdb';
 export default () => {
   var db = new PouchDB('diary_db');
 
-  const getDiaries = (success) => {
-    db.allDocs({
+  const getDiaries = _ => {
+    return db.allDocs({
       include_docs: true,
       attachments: true
     }).then(response => {
       const diaries = response.rows.map(row => row.doc);
-      success(diaries);
+      return Promise.resolve(diaries)
     })
   }
 

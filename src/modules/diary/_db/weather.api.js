@@ -38,8 +38,13 @@ export default _ => {
     })
   }
 
+  const destroyDatabase = _ => {
+    return db.destroy();
+  }
+
   return {
     storeWeatherData,
-    getForecastData
+    getForecastData,
+    destroyDatabase
   };
 };

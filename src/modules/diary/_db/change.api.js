@@ -81,11 +81,16 @@ export default () => {
     })
   }
 
+  const destroyDatabase = _ => {
+    return db.destroy();
+  }
+
   return {
     getChanges,
     createNote,
     updateNote,
     deleteNote,
-    deleteChange
+    deleteChange,
+    destroyDatabase
   }
 }

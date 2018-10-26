@@ -6,6 +6,7 @@ import ChangePouchApi from '../_db/change.api';
 import WeatherApi from '../_api/weather.api';
 import WeatherPouchApi from '../_db/weather.api';
 import * as types from './mutation-types';
+import PouchApi from '../_db/pouch.api';
 
 import { DateTime } from 'luxon';
 
@@ -154,22 +155,25 @@ export default (options) => {
   }
 
   const scopeDiary = ({ commit, getters, dispatch }, { slug, scopeDate }) => {
-    if (getters.diaries.length === 0) {
-      Promise.reject('There are any diaries in user context.')
-    }
-
-    var diary = getters.diaries[0] || {}
-
-    const idx = getters.diaries.findIndex(d => d.slug === slug)
-    if (idx != -1) {
-      diary = getters.diaries[idx]
-    }
-
-    commit(types.SCOPE_DIARY, { diary });
-
-    const day = scopeDate != null ? DateTime.fromSQL(scopeDate) : DateTime.local();
-    dispatch('scopeDay', { day, force: true }).then(() => {
-      Promise.resolve(diary)
+    return new Promise((resolve, reject) => {
+      if (getters.diaries.length === 0) {
+        reject('There are any diaries in user context.')
+        return;
+      }
+  
+      var diary = getters.diaries[0] || {}
+  
+      const idx = getters.diaries.findIndex(d => d.slug === slug)
+      if (idx != -1) {
+        diary = getters.diaries[idx]
+      }
+  
+      commit(types.SCOPE_DIARY, { diary });
+  
+      const day = scopeDate != null ? DateTime.fromSQL(scopeDate) : DateTime.local();
+      dispatch('scopeDay', { day, force: true }).then(() => {
+        resolve(diary)
+      })
     })
   }
 
@@ -379,6 +383,7 @@ export default (options) => {
 
   const flushDiaries = ({ commit }) => {
     commit(types.FLUSH_DIARY_MODULE_STATE);
+    PouchApi.destroyDatabase();
   }
 
   return {

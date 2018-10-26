@@ -1,6 +1,6 @@
 {
   "name": "diary-core",
-  "version": "0.2.27",
+  "version": "0.2.30",
   "private": false,
   "scripts": {
     "serve": "vue-cli-service serve",

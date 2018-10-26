@@ -124,11 +124,16 @@ export default _ => {
 
   const getNote = (noteId) => db.get(noteId)
 
+  const destroyDatabase = _ => {
+    return db.destroy();
+  }
+
   return {
     getDays,
     postNote,
     updateNote,
     syncUpdateNote,
-    deleteNote
+    deleteNote,
+    destroyDatabase
   }
 };

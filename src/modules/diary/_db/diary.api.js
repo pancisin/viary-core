@@ -48,11 +48,16 @@ export default () => {
     })
   }
 
+  const destroyDatabase = _ => {
+    return db.destroy();
+  }
+
   return {
     getDiaries,
     postDiary,
     putDiary,
     getDiary,
-    deleteDiary
+    deleteDiary,
+    destroyDatabase
   }
 }

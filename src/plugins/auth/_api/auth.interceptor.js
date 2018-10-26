@@ -21,7 +21,9 @@ export default store => (request, next) => {
           return data
         })
       }, () => {
-        store.dispatch("$_auth/logout")
+        store.dispatch("$_auth/logout").then(_ => {
+          store.dispatch('$_diary/flushDiaries')
+        })
       })
     }
   });

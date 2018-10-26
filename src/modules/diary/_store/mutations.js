@@ -155,5 +155,13 @@ export default {
         })
       }
     }
+  },
+
+  [types.SET_SYNCHRONIZE_DIARIES_IN_PROGRESS] (state, progress) {
+    state.synchronizeDiariesInProgress = progress;
+  },
+
+  [types.SET_SYNCHRONIZE_NOTES_IN_PROGRESS] (state, progress) {
+    state.synchronizeNotesInProgress = progress;
   }
 }

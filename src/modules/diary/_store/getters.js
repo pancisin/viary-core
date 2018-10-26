@@ -48,5 +48,8 @@ export default {
 
     return Array.from({ length: Math.round(end.diff(start, 'days').days) }, (v, i) => i).map(i => start.plus({ days: i }))
   },
-  hasAnyDiary: state => state.diaries.length > 0
+  hasAnyDiary: state => state.diaries.length > 0,
+  synchronizeDiariesInProgress: state => state.synchronizeDiariesInProgress,
+  synchronizeNotesInProgress: state => state.synchronizeNotesInProgress,
+  synchronizationInProgress: state => state.synchronizeDiariesInProgress || state.synchronizeNotesInProgress
 }

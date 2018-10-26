@@ -1,6 +1,14 @@
 <template>
   <div class="diary-info d-flex jc-sb ai-c">
-    <span>{{ scopedDay.toFormat('W | MMMM yyyy') }}</span>
+    <span>
+      <span v-if="synchronizationInProgress">
+        <i class="lnr lnr-sync fsz-xl lnr-spin"></i>
+      </span>
+      <span v-else>
+        {{ scopedDay.toFormat('W | MMMM yyyy') }}
+      </span>
+    </span>
+
     <dropdown
       class="notifications">
       <span slot="link">
@@ -101,7 +109,7 @@ export default {
     DiaryEditor
   },
   computed: {
-    ...mapGetters('$_diary', ['scopedDay', 'scopedDiary']),
+    ...mapGetters('$_diary', ['scopedDay', 'scopedDiary', 'synchronizationInProgress']),
     ...mapGetters('$_auth', ['user']),
     ...mapGetters('$_settings', ['themes', 'offlineMode']),
     profilePic () {
@@ -124,3 +132,14 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+.lnr-spin {
+    animation: spin 1s infinite linear;
+}
+
+@keyframes spin {
+    from { transform: scale(1) rotate(0deg); }
+    to { transform: scale(1) rotate(360deg); }
+}
+</style>

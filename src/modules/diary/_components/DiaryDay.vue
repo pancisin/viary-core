@@ -1,7 +1,7 @@
 <template>
    <div 
       class="diary-day d-flex flex-column"
-      :class="{ 'diary-day-current' : isCurrent, 'diary-day-focused' : scopedDay.ts === day.ts }"
+      :class="{ 'diary-day-current' : isCurrent, 'diary-day-focused' : focused }"
       @click="focusDayContent(day, $event)">
 
       <div class="diary-day-header">
@@ -12,7 +12,10 @@
           {{ day.weekdayLong }}
         </span>
 
-        <span class="wi fsz-md float-right mT-5" :class="dayWeather(day)"></span>
+        <span 
+          class="wi fsz-md float-right mT-5" 
+          :class="dayWeather(day)">
+        </span>
       </div>
 
       <diary-day-note 
@@ -52,6 +55,10 @@ export default {
     ...mapGetters('$_diary', ['scopedDay']),
     isCurrent () {
       return this.day.startOf('day').toMillis() === DateTime.local().startOf('day').toMillis()
+    },
+    focused () {
+      // scopedDay.ts === day.ts
+      return this.day.startOf('day').toMillis() === this.scopedDay.startOf('day').toMillis();
     },
     upcomingNote () {
       if (this.isCurrent) {
@@ -101,9 +108,6 @@ export default {
     },
 
     dayWeather (day) {
-      // const idx = Math.floor(day.weatherData.length / 2)
-      // let data = day.weatherData[idx];
-      
       let data = day.weatherData;
       let iconIdx = '';
 

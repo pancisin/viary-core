@@ -11,25 +11,20 @@ import DiaryControls from './DiaryControls';
 import DiaryInfo from './DiaryInfo';
 import DiaryWeek from './DiaryWeek';
 
-import { mapGetters, mapActions } from 'vuex';
-
-import { DiaryTransition } from '@/components/transitions';
+import { mapGetters } from 'vuex';
 import { Loading } from '@/directives';
-
-// require("easeplus-velocity/release/1.2/velocity.easeplus.min");
 
 export default {
   components: {
     DiaryControls,
     DiaryInfo,
-    DiaryTransition,
     DiaryWeek
   },
   directives: {
     Loading
   },
   computed: {
-    ...mapGetters('$_diary', ['loadingDiary', 'weekDays', 'scopedDay'])
+    ...mapGetters('$_diary', ['loadingDiary', 'weekDays'])
   }
 }
 </script>

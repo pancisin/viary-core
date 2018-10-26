@@ -21,4 +21,8 @@ const colorLightness = c => {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
-export { baseUrl, guid, colorLightness };
+export { 
+  baseUrl, 
+  guid, 
+  colorLightness 
+};

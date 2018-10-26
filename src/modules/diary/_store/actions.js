@@ -11,8 +11,8 @@ import { DateTime } from 'luxon';
 
 export default (options) => {
   const baseUrl = options.baseUrl || '';
-  const useLocalDatabase = options.useLocalDatabase; // try this as function
-  const disableWeatherData = options.disableWeatherData; // not implemented
+  // const useLocalDatabase = options.useLocalDatabase; // try this as function
+  // const disableWeatherData = options.disableWeatherData; // not implemented
   // const offlineMode = options.offlineMode; // not implemented
 
   const pouch = {
@@ -54,9 +54,10 @@ export default (options) => {
     const diaries = getters.diaries;
     const promises = [];
     
+    commit(types.SET_SYNCHRONIZE_DIARIES_IN_PROGRESS, true)
     return pouch.getDiaries().then(dbDiaries => {
       const promises = []
-
+      console.log('running this code means sync in progress')
       // Store remote only diaries locally.
       diaries
         .filter(d => !dbDiaries.map(dbd => dbd._id).includes(d.slug))
@@ -74,12 +75,11 @@ export default (options) => {
         .filter(dbd => !diaries.map(d => d.slug).includes(dbd._id))
         .forEach(dbd => {
           let p = api().postDiary(dbd, diary => {
+            commit(types.ADD_DIARY, { diary })
             return Promise.all([
               pouch.deleteDiary(dbd._id),
               pouch.putDiary(diary.slug, diary)
             ])
-
-            commit(types.ADD_DIARY, { diary })
           })
 
           promises.push(p)
@@ -92,7 +92,10 @@ export default (options) => {
 
         })
 
-      return Promise.all(promises)
+      return Promise.all(promises).then(_ => {
+        commit(types.SET_SYNCHRONIZE_DIARIES_IN_PROGRESS, false)
+        return Promise.resolve('')
+      })
     })
   }
 
@@ -341,6 +344,7 @@ export default (options) => {
   }
 
   const synchronizeNotes = ({ commit, dispatch }) => {
+    commit(types.SET_SYNCHRONIZE_NOTES_IN_PROGRESS, true)
     return ChangePouchApi().getChanges().then(changes => {
       const operationMapping = {
         CREATE: 'addDayNote',
@@ -366,7 +370,10 @@ export default (options) => {
         promises.push(p)
       })
 
-      return Promise.all(promises)
+      return Promise.all(promises).then(_ => {
+        commit(types.SET_SYNCHRONIZE_NOTES_IN_PROGRESS, false)
+        return Promise.resolve('')
+      })  
     })
   }
 

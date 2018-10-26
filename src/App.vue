@@ -4,7 +4,7 @@
       <auth-wrapper>
         <diary-module 
           baseUrl="http://localhost:8180" 
-          :useLocalDatabase="useLocalDatabase" />
+          :offlineMode="offlineMode" />
       </auth-wrapper>
     </div>
   </div>
@@ -30,11 +30,6 @@ export default {
 
     window.addEventListener('online',  updateOnlineStatus);
     window.addEventListener('offline', updateOnlineStatus);
-  },
-  methods: {
-    useLocalDatabase () {
-      return this.offlineMode;
-    }
   }
 }
 </script>

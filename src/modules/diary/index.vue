@@ -49,10 +49,10 @@ export default {
         return ''
       }
     },
-    useLocalDatabase: {
-      type: Function,
+    offlineMode: {
+      type: Boolean,
       default () {
-        return _ => false
+        return false
       }
     }
   },
@@ -63,27 +63,24 @@ export default {
   },
   computed: {
     ...mapGetters('$_settings', ['theme', 'creatorMode']),
-    ...mapGetters('$_diary', ['hasAnyDiary', 'scopedDiary']),
-    offlineMode() {
-      return this.useLocalDatabase()
-    }
+    ...mapGetters('$_diary', ['hasAnyDiary', 'scopedDiary'])
   },
   watch: {
     offlineMode (newVal) {
       if (!newVal) {
-        this.synchronizeDiaries().then(_ => {
-
-        });
-        this.synchronizeNotes().then(_ => {
-
-        });
+        Promise.all([
+          this.synchronizeDiaries(), 
+          this.synchronizeNotes()
+        ]).then(_ => {
+          console.log('synchronization done')
+        })
       }
 
       this.switchOfflineMode(newVal);
     }
   },
   created () {
-    this.$store.registerModule(MODULE_NAMESPACE, store({ baseUrl: this.baseUrl, useLocalDatabase: this.useLocalDatabase }));
+    this.$store.registerModule(MODULE_NAMESPACE, store({ baseUrl: this.baseUrl }));
     this.$store.registerModule('$_settings', SettingsModule({ baseUrl: this.baseUrl }));
     Vue.http.interceptors.push(ErrorInterceptor(this.$store));
     this.$store.dispatch('$_settings/initializeApplication').then(() => {

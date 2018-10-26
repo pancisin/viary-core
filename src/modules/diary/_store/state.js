@@ -8,5 +8,7 @@ export default {
   scopedDay: DateTime.local().toSQL(),
   loadingDiaryInProgress: false,
   savingDiaryInProgress: false,
-  forecastData: []
+  forecastData: [],
+  synchronizeDiariesInProgress: false,
+  synchronizeNotesInProgress: false
 }

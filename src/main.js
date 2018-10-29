@@ -7,6 +7,7 @@ import VueResource from 'vue-resource'
 Vue.config.productionTip = false
 
 const BASE_URL = 'http://localhost:8180';
+// const BASE_URL = 'http://diary.convene.sk';
 
 Vue.use(WebSocketPlugin, {
   baseUrl: BASE_URL

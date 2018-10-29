@@ -40,6 +40,8 @@ import ErrorInterceptor from './_api/error.interceptor';
 
 import Vue from 'vue';
 
+import Prefs from './prefKeys';
+
 export default {
   name: 'DiaryContainer',
   props: {
@@ -62,7 +64,7 @@ export default {
     DiaryCreator
   },
   computed: {
-    ...mapGetters('$_settings', ['theme', 'creatorMode']),
+    ...mapGetters('$_settings', ['theme', 'creatorMode', 'getPreference']),
     ...mapGetters('$_diary', ['hasAnyDiary', 'scopedDiary'])
   },
   watch: {
@@ -105,7 +107,9 @@ export default {
         })
       })
 
-      this.$store.dispatch(`${MODULE_NAMESPACE}/scopeDiary`, {}).then(diary => {
+      this.$store.dispatch(`${MODULE_NAMESPACE}/scopeDiary`, {
+        slug: this.getPreference(Prefs.SCOPED_DIARY)
+      }).then(diary => {
         
       }).catch(() => {
         this.switchCreatorMode(true)
@@ -114,6 +118,7 @@ export default {
 
     // UnsplashApi().getImage('sgpLdF0aSno', image => {
     // UnsplashApi().getImageOfDay(image => {
+    //   const el = this.$refs.calendarColumn;
     //   el.style.background = `url(${image.urls.regular})`
     // })
   },

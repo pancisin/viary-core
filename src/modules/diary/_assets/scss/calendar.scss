@@ -6,7 +6,10 @@ $color-inverse: #e00;
 $color-inverse-active: #e00;
 $color-danger: #e00;
 
-$border-active: 1px solid rgba(255, 255, 255, 0.5);
+@mixin calendar-border($color) {
+  border: 1px solid $color;
+  border-bottom: none;
+}
 
 .calendar {
   position: relative;
@@ -28,12 +31,13 @@ table.calendar-table {
 
   tbody {
     tr {
-      // border: 1px solid transparent;
       // transition: border 0.5s ease;
+      @include calendar-border(transparent);
 
       &.calendar-week-active, 
       &:hover {
-        border: $border-active;
+        @include calendar-border(rgba(255, 255, 255, 0.5));
+        border-bottom: 1px solid rgba(255, 255, 255, 0.5);
       }
     }
   }

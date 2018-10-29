@@ -1,4 +1,5 @@
 import RootApi from '../../_api/root.api';
+import Prefs from '../../prefKeys';
 
 const types = {
   SET_INIT: 'SET_INIT',
@@ -30,31 +31,45 @@ const getters = {
   //   return {}
   // },
   theme: state => state.theme,
+  preferences: state => state.initialData.preferences || [],
   creatorMode: state => state.creatorMode,
   offlineMode: state => state.offlineMode,
-  offlineRecoveryMode: state => state.offlineRecoveryMode
+  offlineRecoveryMode: state => state.offlineRecoveryMode,
+  getPreference: (state, getters) => key => {
+    if (!Prefs.hasOwnProperty(key)) {
+      throw new Error('Preference does not exists!')
+    }
+
+    return getters.preferences[key]
+  }
 }
 
 const actions = ({ baseUrl }) => {
-  const initializeApplication = ({ commit }) => {
+  const api = RootApi(baseUrl)
+
+  const initializeApplication = ({ commit, getters }) => {
     return new Promise(resolve => {
       commit(types.SET_INIT_IN_PROGRESS, true);
 
-      const api = RootApi(baseUrl)
 
       api.getInitial(initialData => {
         commit(types.SET_INIT, { initialData });
-        commit(types.SET_THEME, { theme: initialData.themes[1] })
+        const themeIdx = getters.themes.findIndex(t => t.id == getters.preferences.THEME)
+        const theme = getters.themes[themeIdx]
+
+        commit(types.SET_THEME, { theme })
         commit(types.SET_INIT_IN_PROGRESS, false);
         resolve(initialData);
       });
     });
   }
 
-  const selectTheme = ({ commit, getters }, themeId) => {
+  const selectTheme = ({ commit, getters, dispatch }, themeId) => {
     const themeIdx = getters.themes.findIndex(t => t.id === themeId)
-    console.log(getters.themes[themeIdx])
-    commit(types.SET_THEME, { theme: getters.themes[themeIdx] })
+    const theme = getters.themes[themeIdx]
+
+    dispatch('updateUserPreference', { key: Prefs.THEME, value: theme.id })
+    commit(types.SET_THEME, { theme })
   }
 
   const switchCreatorMode = ({ commit, getters }, state) => {
@@ -69,11 +84,25 @@ const actions = ({ baseUrl }) => {
     commit(types.SET_OFFLINE_RECOVERY_MODE, { offlineRecoveryMode: offlineRecoveryMode || !getters.offlineRecoveryMode })
   }
 
+  const updateUserPreference = ({ commit, getters }, { key, value }) => {
+    return new Promise((resolve, reject) => {
+      if (!Prefs.hasOwnProperty(key)) {
+        reject('Preference does not exists!')
+        return;
+      }
+  
+      return api.updateUserPreference(key, value).then(result => {
+        resolve(result);
+      })
+    })
+  }
+
   return {
     initializeApplication,
     selectTheme,
     switchCreatorMode,
-    switchOfflineMode
+    switchOfflineMode,
+    updateUserPreference
   }
 };
 

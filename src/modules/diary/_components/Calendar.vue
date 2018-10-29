@@ -41,8 +41,10 @@
 </template>
 
 <script>
-import { DateTime, Info } from 'luxon'
-import { mapGetters, mapActions } from 'vuex'
+import { DateTime, Info } from 'luxon';
+import { mapGetters, mapActions } from 'vuex';
+import { colorLightness } from '@/utils';
+
 export default {
   computed: {
     ...mapGetters('$_diary', ['monthDays', 'scopedDay']),
@@ -77,8 +79,10 @@ export default {
     },
     dayCellClass (day) {
       if (DateTime.local().startOf('day').ts === day.ts) {
+        const color = this.theme.color || "";
         return {
-          'background-color': this.theme.color
+          'background-color': color,
+          'color': colorLightness(color) > 150 ? '#333' : '#FFF'
         }
       }
     }

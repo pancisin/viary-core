@@ -9,6 +9,7 @@ import * as types from './mutation-types';
 import PouchApi from '../_db/pouch.api';
 
 import { DateTime } from 'luxon';
+import Prefs from '../prefKeys';
 
 export default (options) => {
   const baseUrl = options.baseUrl || '';
@@ -172,6 +173,7 @@ export default (options) => {
   
       const day = scopeDate != null ? DateTime.fromSQL(scopeDate) : DateTime.local();
       dispatch('scopeDay', { day, force: true }).then(() => {
+        dispatch('$_settings/updateUserPreference', { key: Prefs.SCOPED_DIARY, value: diary.slug }, { root: true })
         resolve(diary)
       })
     })
@@ -220,26 +222,34 @@ export default (options) => {
     return api(offlineMode).getDays(diarySlug, {
       from: week.startOf('week').toFormat('MM/dd/yyyy'),
       to: week.endOf('week').toFormat('MM/dd/yyyy')
+    }).catch(_ => {
+      return []
     }).then(days => {
       // commit(types.SET_SCOPED_DIARY_DAYS, { days });
       
       if (!offlineMode) {
-        days.flatMap(d => {
-          return d.notes.map(n => {
-            return {
-              ...n,
-              date_number: d.date_number,
-              year: d.year,
-              diary_id: diarySlug
-            }
-          }) 
-        }).forEach(note => {
+        days.reduce((acc, cur) => {
+          acc = [
+            ...acc,
+            ...cur.notes.map(n => {
+              return {
+                ...n,
+                date_number: cur.date_number,
+                year: cur.year,
+                diary_id: diarySlug
+              }
+            }) 
+          ]
+
+          return acc;
+        }, []).forEach(note => {
           pouch.syncUpdateNote(note.id, note)
         })
       }
 
       return Promise.resolve(days)
     }).catch(_ => {
+      console.error('err')
       // return dispatch('loadWeekData', { weekNumber, year })
       return []
     }).then(days => {
@@ -252,7 +262,9 @@ export default (options) => {
     const cityName = 'kosice,sk';
     const offlineMode = rootGetters['$_settings/offlineMode']
 
-    return WeatherPouchApi().getForecastData(cityName, getters.scopedDay.toSQLDate()).then(data => {
+    const date = DateTime.local().toSQLDate();
+
+    return WeatherPouchApi().getForecastData(cityName, date).then(data => {
       const result = data.reduce((acc, cur) => {
         acc[cur._id] = cur;
         return acc;

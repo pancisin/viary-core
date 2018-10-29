@@ -1,5 +1,5 @@
 <template>
-  <div class="diary-controls">
+  <div class="diary-controls" :style="style">
     <div class="container pY-10 d-flex jc-sb">
       <button 
         class="btn" 
@@ -31,22 +31,17 @@ import { DateTime } from 'luxon';
 import { colorLightness } from '@/utils';
 
 export default {
-  data () {
-    return {
-      lightTheme: false
-    }
-  },
-  watch: {
-    theme (newVal) {
-      this.$el.style.background = newVal.color
-      this.lightTheme = colorLightness(newVal.color) > 150;
-    }
-  },
   computed: {
     ...mapGetters('$_diary', ['scopedDay']),
     ...mapGetters('$_settings', ['theme']),
+    style () {
+      return {
+        background: this.theme.color
+      }
+    },
     themeClass () {
-      return this.lightTheme ? 'dark' : 'light'
+      const color = this.theme.color || ""
+      return colorLightness(color) > 150 ? 'dark' : 'light'
     } 
   },
   methods: {

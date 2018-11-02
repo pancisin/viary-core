@@ -2,9 +2,9 @@
   min-width: 350px;
   padding: 0;
 
-  @include to($breakpoint-sm) {
-    max-width: 300px;
-  }
+  // @include to($breakpoint-sm) {
+  //   max-width: 300px;
+  // }
 
   display: block;
   margin: 0;

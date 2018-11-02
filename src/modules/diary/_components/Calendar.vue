@@ -69,7 +69,10 @@ export default {
   methods: {
     ...mapActions('$_diary', ['scopeDay']),
     manipulateScope(diff) {
-      this.scopeDay({ day: this.scopedDay.plus({ months: diff }) })
+      var day = this.scopedDay.plus({ months: diff })
+      day = diff < 0 ? day.endOf('month') : day.startOf('month')
+
+      this.scopeDay({ day })
     },
     selectDate (day) {
       this.$emit('selectDate', day.timestamp);

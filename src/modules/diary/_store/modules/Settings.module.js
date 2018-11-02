@@ -55,7 +55,7 @@ const actions = ({ baseUrl }) => {
       api.getInitial(initialData => {
         commit(types.SET_INIT, { initialData });
         const themeIdx = getters.themes.findIndex(t => t.id == getters.preferences.THEME)
-        const theme = getters.themes[themeIdx]
+        const theme = themeIdx !== -1 ? getters.themes[themeIdx] : getters.themes[0]
 
         commit(types.SET_THEME, { theme })
         commit(types.SET_INIT_IN_PROGRESS, false);

@@ -1,5 +1,6 @@
 <script>
 import { ClickOutside } from '@/directives';
+import velocity from 'velocity-animate';
 export default {
   props: {
     tag: {
@@ -14,8 +15,28 @@ export default {
   },
   data () {
     return {
-      show: false
+      show: false,
+      dropdownMenuStyle: {}
     };
+  },
+  watch: {
+    show(newVal) {
+      if (newVal) {
+        this.$nextTick(_ => {
+          const width = 350;
+          const el = this.$refs.dropdownMenu
+
+          if (el == null) return 
+
+          const boundary = el.getBoundingClientRect()
+
+          this.dropdownMenuStyle = {
+            width: boundary.right - (width + 15) < 0 ? `${boundary.width + boundary.x - 15}px` : 'auto',
+            'min-width': boundary.right - (width + 15) < 0 ? 'auto' : `${width}px`
+          }
+        })
+      }
+    }
   },
   render (h) {
     return h(this.tag || 'div', {
@@ -38,9 +59,30 @@ export default {
         }
       }, this.$slots.link),
       h('transition', {
-        props: {
-          name: 'fade'
-        }},
+        on: {
+          beforeEnter: el => {
+            el.style.opacity = 0;
+          },
+          enter: (el, done) => {
+            velocity(el, {
+              opacity: 1
+            }, {
+              easing: [500, 20],
+              duration: 150,
+              complete: done
+            })
+          },
+          leave: (el, done) => {
+            velocity(el, {
+              opacity: 0
+            }, {
+              easing: [500, 20],
+              duration: 150,
+              complete: done
+            })
+          }
+        }
+      },
       [
         h('ul', {
           class: 'dropdown-menu fsz-sm',
@@ -49,7 +91,9 @@ export default {
               name: 'show',
               value: this.show
             }
-          ]
+          ],
+          style: this.dropdownMenuStyle,
+          ref: 'dropdownMenu'
         },
         this.$slots.default)
       ])
@@ -57,10 +101,3 @@ export default {
   }
 };
 </script>
-
-<style>
-ul.dropdown-menu {
-  display: block;
-  z-index: 500;
-}
-</style>

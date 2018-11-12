@@ -1,20 +1,16 @@
 <template>
   <div>
-    <div class="contacts-info d-flex jc-sb ai-c">
-      <a @click="setDiaryMode()">
-        <i class="lnr lnr-cross fsz-xl"></i>
-      </a>
-
-      <a @click="displayCreateContactModal = true">
-        <i class="lnr lnr-plus-circle fsz-xl"></i>
-      </a>
-    </div>
-
     <div class="contacts-list">
       <contact 
         v-for="(contact, index) in contacts" 
         :key="index" 
         :contact="contact" />
+    </div>
+
+    <div class="text-center">
+      <a @click="displayCreateContactModal = true">
+        <i class="lnr lnr-plus-circle fsz-xl"></i>
+      </a>
     </div>
 
     <modal :show.sync="displayCreateContactModal">
@@ -54,11 +50,7 @@ export default {
 </script>
 
 <style lang="scss">
-.contacts-info {
-  height: 50px;
-}
-
 .contacts-list {
-  padding: 20px 0;
+  // padding: 20px 0;
 }
 </style>

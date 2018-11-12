@@ -19,6 +19,8 @@
       </a>
     </div>
     <div class="col-lg-9">
+      <menu-bar class="pY-10" />
+
       <transition name="fade" mode="out-in">
         <contacts-module v-if="contactsMode" :baseUrl="baseUrl" />
         <diary v-else-if="!creatorMode" :theme-color="theme.color" />
@@ -32,6 +34,7 @@
 import Diary from './_components/Diary';
 import DiaryCreator from './_components/DiaryCreator';
 import Calendar from './_components/Calendar';
+import MenuBar from './_components/MenuBar';
 
 import store from './_store';
 import SettingsModule from './_store/modules/Settings.module';
@@ -66,6 +69,7 @@ export default {
     }
   },
   components: {
+    MenuBar,
     Diary,
     Calendar,
     DiaryCreator,

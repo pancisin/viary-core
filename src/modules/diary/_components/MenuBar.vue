@@ -1,17 +1,22 @@
 <template>
-  <div class="diary-info d-flex jc-sb ai-c">
+  <div class="menu-bar d-flex jc-sb ai-c">
     <span>
-      <span v-if="synchronizationInProgress">
-        <i class="lnr lnr-sync fsz-xl lnr-spin"></i>
-      </span>
-      <span v-else>
-        {{ scopedDay.toFormat('W | MMMM yyyy') }}
-      </span>
+      <transition name="fade" mode="out-in">
+        <span v-if="synchronizationInProgress">
+          <i class="lnr lnr-sync fsz-xl lnr-spin"></i>
+        </span>
+        <span v-else-if="diaryMode">
+          {{ scopedDay.toFormat('W | MMMM yyyy') }}
+        </span>
+      </transition>
     </span>
 
     <span class="d-flex flex-row">
-      <a @click="setContactsMode()" class="mR-15">
-        <i class="lnr lnr-user fsz-xl"></i>
+      <a v-if="diaryMode" @click="setContactsMode()" class="mR-15">
+        <i class="lnr lnr-users fsz-xl"></i>
+      </a>
+      <a v-else-if="contactsMode" @click="setDiaryMode()" class="mR-15">
+        <i class="lnr lnr-book fsz-xl"></i>
       </a>
       <dropdown
         class="notifications">
@@ -116,7 +121,7 @@ export default {
   computed: {
     ...mapGetters('$_diary', ['scopedDay', 'scopedDiary', 'synchronizationInProgress']),
     ...mapGetters('$_auth', ['user']),
-    ...mapGetters('$_settings', ['themes', 'offlineMode']),
+    ...mapGetters('$_settings', ['themes', 'offlineMode', 'diaryMode', 'contactsMode']),
     profilePic () {
       return ""
       // return gravatar.url(this.user.email)
@@ -124,7 +129,7 @@ export default {
   },
   methods: {
     ...mapActions('$_auth', ['logout']),
-    ...mapActions('$_settings', ['selectTheme', 'setContactsMode']),
+    ...mapActions('$_settings', ['selectTheme', 'setContactsMode', 'setDiaryMode']),
     logoutNow() {
       this.logout().then(() => {
         this.$store.dispatch('$_diary/flushDiaries')
@@ -139,12 +144,16 @@ export default {
 </script>
 
 <style lang="scss">
+.menu-bar {
+  height: 50px;
+}
+
 .lnr-spin {
-    animation: spin 1s infinite linear;
+  animation: spin 1s infinite linear;
 }
 
 @keyframes spin {
-    from { transform: scale(1) rotate(0deg); }
-    to { transform: scale(1) rotate(360deg); }
+  from { transform: scale(1) rotate(0deg); }
+  to { transform: scale(1) rotate(360deg); }
 }
 </style>

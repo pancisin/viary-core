@@ -5,12 +5,13 @@ $darken-amount: 2;
 $bg-gradient: linear-gradient(to right bottom, #e96443, #904e95);
 
 .diary {
-  height: calc(100vh - 55px);
+  height: calc(100vh - 110px);
   background: #ffffffd9;
   overflow: hidden;
 
   @media screen and (min-width: 992px) {
-    height: 100vh;
+    // height: 100vh;
+    height: calc(100vh - 55px);
   }
 
   .diary-controls {
@@ -37,7 +38,8 @@ $bg-gradient: linear-gradient(to right bottom, #e96443, #904e95);
   .diary-week {
     display: flex;
     flex-wrap: wrap;
-    height: calc(100% - 55px);
+    // height: calc(100% - 55px);
+    height: 100%;
     overflow-y: auto;
     padding-bottom: 10px;
 

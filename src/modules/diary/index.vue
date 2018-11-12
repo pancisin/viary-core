@@ -4,8 +4,10 @@
       class="col-lg-3 d-none d-lg-flex jc-sb ai-fs pB-10 flex-column calendar-column c-white h-100vh"
       ref="calendarColumn">
 
-      <calendar v-if="!creatorMode" />
-      <div v-else></div>
+      <transition name="fade" mode="out-in">
+        <calendar v-if="diaryMode" />
+        <div v-else></div>
+      </transition>
 
       <!-- <img src="./_assets/img/viary_logo_1000_rounded.png" style="width:100%"> -->
 
@@ -17,8 +19,11 @@
       </a>
     </div>
     <div class="col-lg-9">
-      <diary v-if="!creatorMode" :theme-color="theme.color" />
-      <diary-creator :dismissable="hasAnyDiary" v-else />
+      <transition name="fade" mode="out-in">
+        <contacts-module v-if="contactsMode" :baseUrl="baseUrl" />
+        <diary v-else-if="!creatorMode" :theme-color="theme.color" />
+        <diary-creator :dismissable="hasAnyDiary" v-else />
+      </transition>
     </div>
   </div>
 </template>
@@ -42,6 +47,8 @@ import Vue from 'vue';
 
 import Prefs from './prefKeys';
 
+import ContactsModule from '../contacts';
+
 export default {
   name: 'DiaryContainer',
   props: {
@@ -61,10 +68,11 @@ export default {
   components: {
     Diary,
     Calendar,
-    DiaryCreator
+    DiaryCreator,
+    ContactsModule
   },
   computed: {
-    ...mapGetters('$_settings', ['theme', 'creatorMode', 'getPreference']),
+    ...mapGetters('$_settings', ['theme', 'creatorMode', 'getPreference', 'contactsMode', 'diaryMode']),
     ...mapGetters('$_diary', ['hasAnyDiary', 'scopedDiary'])
   },
   watch: {
@@ -110,9 +118,9 @@ export default {
       this.$store.dispatch(`${MODULE_NAMESPACE}/scopeDiary`, {
         slug: this.getPreference(Prefs.SCOPED_DIARY)
       }).then(diary => {
-        
-      }).catch(() => {
-        this.switchCreatorMode(true)
+
+      }).catch(err => {
+        this.setCreatorMode()
       })
     });
 
@@ -127,7 +135,7 @@ export default {
     this.$store.unregisterModule('$_settings');
   },
   methods: {
-    ...mapActions('$_settings', ['switchCreatorMode', 'switchOfflineMode']),
+    ...mapActions('$_settings', ['setCreatorMode', 'switchOfflineMode']),
     ...mapActions('$_diary', ['synchronizeDiaries', 'synchronizeNotes'])
   }
 };

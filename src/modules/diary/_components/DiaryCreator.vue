@@ -2,7 +2,7 @@
   <div class="row p-10 d-flex ai-c" style="height: 100vh">
     <div class="col-md-8 col-lg-6 offset-md-2 offset-lg-3">
       <div class="text-right" v-if="dismissable">
-        <a @click="switchCreatorMode(false)">
+        <a @click="setDiaryMode()">
           <i class="lnr lnr-cross fsz-xl"></i>
         </a>
       </div>
@@ -29,7 +29,7 @@ export default {
     CreateDiaryForm
   },
   methods: {
-    ...mapActions('$_settings', ['switchCreatorMode'])
+    ...mapActions('$_settings', ['setDiaryMode'])
   }
 }
 </script>

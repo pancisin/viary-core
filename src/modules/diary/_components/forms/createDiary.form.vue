@@ -31,10 +31,10 @@ export default {
   },
   methods: {
     ...mapActions('$_diary', ['createDiary']),
-    ...mapActions('$_settings', ['switchCreatorMode']),
+    ...mapActions('$_settings', ['setDiaryMode']),
     submit () {
       this.createDiary(this.diary).then(() => {
-        this.switchCreatorMode();
+        this.setDiaryMode();
       })
     }
   }

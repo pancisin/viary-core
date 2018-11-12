@@ -5,14 +5,20 @@ const types = {
   SET_INIT: 'SET_INIT',
   SET_INIT_IN_PROGRESS: 'SET_INIT_IN_PROGRESS',
   SET_THEME: 'SET_THEME',
-  SET_CREATOR_MODE: 'SET_CREATOR_MODE',
+  SET_MODE: 'SET_MODE',
   SET_OFFLINE_MODE: 'SET_OFFLINE_MODE',
   SET_OFFLINE_RECOVERY_MODE: 'SET_OFFLINE_RECOVERY_MODE'
 }
 
+const appMode = {
+  DIARY: 'DIARY',
+  CREATOR: 'CREATOR',
+  CONTACTS: 'CONTACTS'
+}
+
 const state = {
   initialData: {},
-  creatorMode: false,
+  mode: appMode.DIARY,
   theme: {},
   loadingInitialData: false,
   offlineMode: false,
@@ -32,7 +38,9 @@ const getters = {
   // },
   theme: state => state.theme,
   preferences: state => state.initialData.preferences || [],
-  creatorMode: state => state.creatorMode,
+  diaryMode: state => state.mode === appMode.DIARY,
+  creatorMode: state => state.mode === appMode.CREATOR,
+  contactsMode: state => state.mode === appMode.CONTACTS,
   offlineMode: state => state.offlineMode,
   offlineRecoveryMode: state => state.offlineRecoveryMode,
   getPreference: (state, getters) => key => {
@@ -72,8 +80,16 @@ const actions = ({ baseUrl }) => {
     commit(types.SET_THEME, { theme })
   }
 
-  const switchCreatorMode = ({ commit, getters }, state) => {
-    commit(types.SET_CREATOR_MODE, { state: state || !getters.creatorMode })
+  const setCreatorMode = ({ commit }) => {
+    commit(types.SET_MODE, { mode: appMode.CREATOR })
+  }
+
+  const setDiaryMode = ({ commit }) => {
+    commit(types.SET_MODE, { mode: appMode.DIARY })
+  }
+
+  const setContactsMode = ({ commit }) => {
+    commit(types.SET_MODE, { mode: appMode.CONTACTS })
   }
 
   const switchOfflineMode = ({ commit, getters }, offlineMode) => {
@@ -100,7 +116,9 @@ const actions = ({ baseUrl }) => {
   return {
     initializeApplication,
     selectTheme,
-    switchCreatorMode,
+    setDiaryMode,
+    setContactsMode,
+    setCreatorMode,
     switchOfflineMode,
     updateUserPreference
   }
@@ -119,8 +137,8 @@ const mutations = {
     state.theme = theme;
   },
   
-  [types.SET_CREATOR_MODE] (st, { state }) {
-    st.creatorMode = state;
+  [types.SET_MODE] (st, { mode }) {
+    st.mode = mode;
   },
 
   [types.SET_OFFLINE_MODE] (state, { offlineMode }) {

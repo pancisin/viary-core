@@ -1,11 +1,9 @@
 <template>
   <div class="menu-bar d-flex jc-sb ai-c">
     <span>
-      <span v-if="$navigator.backOption">
+      <navigator-link v-if="$navigator.route.nested" :to="-1">
         <span class="lnr lnr-arrow-left fsz-xl"></span>
-      </span>
-
-      {{ $navigator.route.path }}
+      </navigator-link>
 
       <transition name="fade" mode="out-in">
         <span v-if="synchronizationInProgress">

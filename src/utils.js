@@ -1,9 +1,9 @@
-const baseUrl = () => {
+const baseUrl = _ => {
   const url = window.location;
   return `${url.protocol}//${url.host}/${url.pathname.split('/')[1]}`;
 };
 
-const guid = () => {
+const guid = _ => {
   function s4() {
     return Math.floor((1 + Math.random()) * 0x10000)
       .toString(16)

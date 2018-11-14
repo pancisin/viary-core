@@ -1,6 +1,6 @@
 import { normalizePath } from '@/utils';
 
-export default ({ eventBus, getRoutes }) => {
+export default ({ eventBus, getRoutes, getLocation }) => {
   return {
     props: {
       animated: {
@@ -30,17 +30,14 @@ export default ({ eventBus, getRoutes }) => {
     },
     created () {
       eventBus.$on('navigate', this.navigateHandler)
-      this.currentRoute = this.getRoute(normalizePath(window.location.pathname))
+      this.currentRoute = this.getRoute(getLocation())
     },
     methods: {
       getRoute (path) {
-        const routes = getRoutes(this)
-        const idx = routes.findIndex(r => r.path === normalizePath(path))
-        return routes[idx]
+        return getRoutes(this).find(r => r.path === normalizePath(path));
       },
       navigateHandler (to) {
-        const path = normalizePath(to)
-        const route = this.getRoute(path)
+        const route = this.getRoute(to)
         if (route) {
           this.currentRoute = route
         }

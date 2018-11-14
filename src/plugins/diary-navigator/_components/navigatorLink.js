@@ -2,7 +2,7 @@ export default ({ eventBus }) => {
   return {
     props: {
       to: {
-        type: String,
+        type: [String, Number, Object],
         required: true
       }
     },
@@ -10,9 +10,6 @@ export default ({ eventBus }) => {
       return h('a', {
         on: {
           click: this.navigate
-        },
-        attrs: {
-          // href: this.to
         }
       }, this.$slots.default)
     },

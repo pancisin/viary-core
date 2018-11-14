@@ -112,7 +112,7 @@ export default {
       }
     ]
 
-    Vue.use(DiaryNavigatorPlugin, { routes })
+    Vue.use(DiaryNavigatorPlugin, { routes, basePath: this.$route.path })
     
     this.$store.registerModule(MODULE_NAMESPACE, store({ baseUrl: this.baseUrl }));
     this.$store.registerModule('$_settings', SettingsModule({ baseUrl: this.baseUrl }));

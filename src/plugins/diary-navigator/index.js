@@ -3,13 +3,12 @@ import { guid } from '@/utils';
 import NavigatorView from './_components/navigatorView';
 import NavigatorLink from './_components/navigatorLink.js';
 
-import Vue from 'vue';
-
 import { normalizePath } from '@/utils';
 
 const DiaryRouterPlugin = {
   install(Vue, options) {
     var routes = options.routes || [];
+    const basePath = options.basePath || '';
 
     routes = routes.map(r => {
       return {
@@ -24,37 +23,39 @@ const DiaryRouterPlugin = {
       return idx === -1 ? routes : routes[idx].children;
     }
 
-    const eventBus = new Vue();
-    Vue.component('navigator-view', NavigatorView({ routes, eventBus, getRoutes }))
-    Vue.component('navigator-link', NavigatorLink({ eventBus }))
-
-    const findRoute = to => {
-      const flatRoutes = routes.map(r => {
-        if (r.children && r.children.length > 0) {
-          return r.children
-        }
-
-        return [ r ]
-      }).reduce((acc, cur) => {
-        cur.forEach(r => {
-          acc.push(r)
-        })
-        return acc;
-      }, [])
-
-      return flatRoutes.find(r => r.path === normalizePath(to));
+    const getLocation = _ => {
+      return normalizePath(window.location.pathname.replace(basePath, ''));
     }
+
+    const eventBus = new Vue;
+    const componentOptions = {
+      eventBus,
+      getRoutes,
+      getLocation
+    }
+
+    Vue.component('navigator-view', NavigatorView(componentOptions))
+    Vue.component('navigator-link', NavigatorLink(componentOptions))
+
+    const findRoute = to => routes.map(r => {
+      if (r.children && r.children.length > 0) {
+        return r.children
+      }
+
+      return [ r ]
+    }).reduce((acc, cur) => {
+      cur.forEach(r => {
+        acc.push(r)
+      })
+
+      return acc;
+    }, []).find(r => r.path === normalizePath(to));
     
-    const pathName = normalizePath(window.location.pathname);
     const navigator = {
-      currentRoute: findRoute(pathName),
+      currentRoute: findRoute(getLocation()),
 
       get currentPath () {
         return this.currentRoute.path;
-      },
-
-      get backOption () {
-        return this.currentRoute.nested;
       },
 
       get route () {
@@ -65,33 +66,43 @@ const DiaryRouterPlugin = {
         const idx = routes.findIndex(r => r.component.name === inst.$options.name)
 
         if (idx !== -1) {
-          rts.map(r => {
+          const parent = routes[idx];
+          const children = rts.map(r => {
             return {
               ...r,
-              path: normalizePath(routes[idx].path, r.path),
+              path: normalizePath(parent.path, r.path),
               relativePath: r.path,
               nested: true
             }
-          }).forEach(r => {
-            const index = routes[idx].children.findIndex(c => c.path === r.path);
+          })
 
-            if (index === -1) {
-              routes[idx].children.push(r)
-            }
+          routes.splice(idx, 1, {
+            ...parent,
+            children
           })
         }
       },
 
       navigate: to => {
-        window.history.pushState(null, null, to); 
-        // navigator.currentRoute = findRoute(to);
-        Vue.set(navigator, 'currentRoute', findRoute(to))
-        eventBus.$emit('navigate', to)
+        switch (typeof to) {
+          case "string":
+            window.history.pushState(null, null, '/' + normalizePath(basePath, to)); 
+            eventBus.$emit('navigate', to)
+            Vue.set(navigator, 'currentRoute', findRoute(to))
+            break;
+          case "number":
+            if (to === -1) {
+              window.history.back();
+            }
+            break;
+          case "object":
+            break;
+        }
       } 
     }
 
     window.addEventListener('popstate', () => {  
-      navigator.navigate(window.location.pathname)
+      navigator.navigate(getLocation())
     });
 
     Vue.prototype.$navigator = navigator;

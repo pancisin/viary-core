@@ -20,6 +20,14 @@ export default options => {
     })
   }
 
+  const scopeContact = ({ commit, getters }, contact) => {
+    const idx = getters.contacts.findIndex(c => c.id === contact.id)
+
+    if (idx !== -1) {
+      commit(types.SCOPE_CONTACT, { contact: getters.contacts[idx] })
+    }
+  }
+
   const updateContact = ({ commit }, contact) => {
 
   }
@@ -31,6 +39,7 @@ export default options => {
   return {
     initializeContactsList,
     createContact,
+    scopeContact,
     updateContact,
     deleteContact
   }

@@ -1,5 +1,5 @@
 <template>
-  <div class="contact">
+  <a class="contact" @click="selectContact">
     <div class="contact-name">
       {{ displayName }}
     </div>
@@ -7,10 +7,13 @@
     <small class="text-muted">
       tel.: {{ contact.meta.phone }}
     </small>  
-  </div>
+  </a>
 </template>
 
 <script>
+import { mapActions } from 'vuex';
+import { formatDisplayName } from '../utils';
+
 export default {
   props: {
     contact: {
@@ -20,8 +23,14 @@ export default {
   },
   computed: {
     displayName() {
-      const name = this.contact.name;
-      return `${name.prefix || ''} ${name.firstName} ${name.lastName} ${name.suffix || ''}`
+      return formatDisplayName(this.contact.name)
+    }
+  },
+  methods: {
+    ...mapActions('$_contacts', ['scopeContact']),
+    selectContact () {
+      this.scopeContact(this.contact)
+      this.$navigator.navigate('contacts/contact')
     }
   }
 }
@@ -29,6 +38,7 @@ export default {
 
 <style lang="scss">
 .contact {
+  display: block;
 
   &:first-child {
     margin-bottom: 10px;
@@ -36,7 +46,8 @@ export default {
 
   & ~ .contact {
     padding-top: 10px;
-    margin-bottom: 10px;
+    margin-top: 10px;
+    // margin-bottom: 10px;
     border-top: 1px solid #eee;
   }
 

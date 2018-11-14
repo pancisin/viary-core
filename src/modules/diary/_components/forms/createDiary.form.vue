@@ -31,10 +31,9 @@ export default {
   },
   methods: {
     ...mapActions('$_diary', ['createDiary']),
-    ...mapActions('$_settings', ['setDiaryMode']),
     submit () {
       this.createDiary(this.diary).then(() => {
-        this.setDiaryMode();
+        this.$navigator.navigate('/')
       })
     }
   }

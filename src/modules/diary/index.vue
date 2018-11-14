@@ -5,11 +5,9 @@
       ref="calendarColumn">
 
       <transition name="fade" mode="out-in">
-        <calendar v-if="diaryMode" />
+        <calendar v-if="$navigator.currentPath === '/'" />
         <div v-else></div>
       </transition>
-
-      <!-- <img src="./_assets/img/viary_logo_1000_rounded.png" style="width:100%"> -->
 
       <a 
         class="position-relative c-white fw-300" 
@@ -20,12 +18,7 @@
     </div>
     <div class="col-lg-9">
       <menu-bar class="pY-10" />
-
-      <transition name="fade" mode="out-in">
-        <contacts-module v-if="contactsMode" :baseUrl="baseUrl" />
-        <diary v-else-if="!creatorMode" :theme-color="theme.color" />
-        <diary-creator :dismissable="hasAnyDiary" v-else />
-      </transition>
+      <navigator-view />
     </div>
   </div>
 </template>
@@ -51,6 +44,7 @@ import Vue from 'vue';
 import Prefs from './prefKeys';
 
 import ContactsModule from '../contacts';
+import { DiaryNavigatorPlugin } from '@/plugins';
 
 export default {
   name: 'DiaryContainer',
@@ -76,7 +70,7 @@ export default {
     ContactsModule
   },
   computed: {
-    ...mapGetters('$_settings', ['theme', 'creatorMode', 'getPreference', 'contactsMode', 'diaryMode']),
+    ...mapGetters('$_settings', ['theme', 'getPreference']),
     ...mapGetters('$_diary', ['hasAnyDiary', 'scopedDiary'])
   },
   watch: {
@@ -94,6 +88,32 @@ export default {
     }
   },
   created () {
+    const routes = [
+      {
+        path: '/',
+        name: 'diary',
+        component: Diary
+      },
+      {
+        path: '/contacts',
+        name: 'contacts',
+        props: {
+          baseUrl: this.baseUrl
+        },
+        component: ContactsModule
+      },
+      {
+        path: '/create-diary',
+        name: 'diary-creator',
+        component: DiaryCreator,
+        props: {
+          dismissable: this.hasAnyDiary
+        }
+      }
+    ]
+
+    Vue.use(DiaryNavigatorPlugin, { routes })
+    
     this.$store.registerModule(MODULE_NAMESPACE, store({ baseUrl: this.baseUrl }));
     this.$store.registerModule('$_settings', SettingsModule({ baseUrl: this.baseUrl }));
     Vue.http.interceptors.push(ErrorInterceptor(this.$store));
@@ -124,7 +144,7 @@ export default {
       }).then(diary => {
 
       }).catch(err => {
-        this.setCreatorMode()
+        this.$navigator.navigate('/create-diary')
       })
     });
 
@@ -139,7 +159,7 @@ export default {
     this.$store.unregisterModule('$_settings');
   },
   methods: {
-    ...mapActions('$_settings', ['setCreatorMode', 'switchOfflineMode']),
+    ...mapActions('$_settings', ['switchOfflineMode']),
     ...mapActions('$_diary', ['synchronizeDiaries', 'synchronizeNotes'])
   }
 };

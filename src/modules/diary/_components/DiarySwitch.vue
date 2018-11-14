@@ -56,7 +56,6 @@ export default {
   },
   methods: {
     ...mapActions('$_diary', ['scopeDiary']),
-    ...mapActions('$_settings', ['setCreatorMode']),
     switchDiary() {
       this.scopeDiary({ slug: this.selectedDiary, scopeDate: this.scopedDay.toSQL() }).then(diary => {
         this.$emit('switched', diary);
@@ -64,7 +63,7 @@ export default {
     },
     diarySelectChagne (e) {
       if (e.target.value === this.createOptionValue) {
-        this.setCreatorMode();
+        this.$navigator.navigate('/create-diary')
       }
     }
   }

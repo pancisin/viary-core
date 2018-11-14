@@ -1,23 +1,30 @@
 <template>
   <div class="menu-bar d-flex jc-sb ai-c">
     <span>
+      <span v-if="$navigator.backOption">
+        <span class="lnr lnr-arrow-left fsz-xl"></span>
+      </span>
+
+      {{ $navigator.route.path }}
+
       <transition name="fade" mode="out-in">
         <span v-if="synchronizationInProgress">
-          <i class="lnr lnr-sync fsz-xl lnr-spin"></i>
+          <span class="lnr lnr-sync fsz-xl lnr-spin"></span>
         </span>
-        <span v-else-if="diaryMode">
+        <span v-else-if="$navigator.currentPath === ''">
           {{ scopedDay.toFormat('W | MMMM yyyy') }}
         </span>
       </transition>
     </span>
 
     <span class="d-flex flex-row">
-      <a v-if="diaryMode" @click="setContactsMode()" class="mR-15">
-        <i class="lnr lnr-users fsz-xl"></i>
-      </a>
-      <a v-else-if="contactsMode" @click="setDiaryMode()" class="mR-15">
-        <i class="lnr lnr-book fsz-xl"></i>
-      </a>
+      <navigator-link v-if="$navigator.currentPath !== 'contacts'" to="/contacts" class="mR-15">
+        <span class="lnr lnr-users fsz-xl"></span>
+      </navigator-link>
+      <navigator-link v-else to="/" class="mR-15">
+        <span class="lnr lnr-book fsz-xl"></span>
+      </navigator-link>
+
       <dropdown
         class="notifications">
         <span slot="link">
@@ -121,7 +128,7 @@ export default {
   computed: {
     ...mapGetters('$_diary', ['scopedDay', 'scopedDiary', 'synchronizationInProgress']),
     ...mapGetters('$_auth', ['user']),
-    ...mapGetters('$_settings', ['themes', 'offlineMode', 'diaryMode', 'contactsMode']),
+    ...mapGetters('$_settings', ['themes', 'offlineMode']),
     profilePic () {
       return ""
       // return gravatar.url(this.user.email)
@@ -129,7 +136,7 @@ export default {
   },
   methods: {
     ...mapActions('$_auth', ['logout']),
-    ...mapActions('$_settings', ['selectTheme', 'setContactsMode', 'setDiaryMode']),
+    ...mapActions('$_settings', ['selectTheme']),
     logoutNow() {
       this.logout().then(() => {
         this.$store.dispatch('$_diary/flushDiaries')

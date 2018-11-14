@@ -11,5 +11,9 @@ export default {
       ...state.contacts,
       contact
     ]
+  },
+
+  [types.SCOPE_CONTACT] (state, { contact }) {
+    state.scopedContact = contact;
   }
 }

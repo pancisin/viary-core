@@ -1,3 +1,4 @@
 export default {
-  contacts: state => state.contacts
+  contacts: state => state.contacts,
+  scopedContact: state => state.scopedContact
 }

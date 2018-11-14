@@ -21,8 +21,13 @@ const colorLightness = c => {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
+const normalizePath = ( ...path ) => {
+  return path.join('/').split('/').filter(p => p).join('/')
+}
+
 export { 
   baseUrl, 
   guid, 
-  colorLightness 
+  colorLightness,
+  normalizePath
 };

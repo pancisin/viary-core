@@ -5,20 +5,12 @@ const types = {
   SET_INIT: 'SET_INIT',
   SET_INIT_IN_PROGRESS: 'SET_INIT_IN_PROGRESS',
   SET_THEME: 'SET_THEME',
-  SET_MODE: 'SET_MODE',
   SET_OFFLINE_MODE: 'SET_OFFLINE_MODE',
   SET_OFFLINE_RECOVERY_MODE: 'SET_OFFLINE_RECOVERY_MODE'
 }
 
-const appMode = {
-  DIARY: 'DIARY',
-  CREATOR: 'CREATOR',
-  CONTACTS: 'CONTACTS'
-}
-
 const state = {
   initialData: {},
-  mode: appMode.DIARY,
   theme: {},
   loadingInitialData: false,
   offlineMode: false,
@@ -38,9 +30,6 @@ const getters = {
   // },
   theme: state => state.theme,
   preferences: state => state.initialData.preferences || [],
-  diaryMode: state => state.mode === appMode.DIARY,
-  creatorMode: state => state.mode === appMode.CREATOR,
-  contactsMode: state => state.mode === appMode.CONTACTS,
   offlineMode: state => state.offlineMode,
   offlineRecoveryMode: state => state.offlineRecoveryMode,
   getPreference: (state, getters) => key => {
@@ -80,18 +69,6 @@ const actions = ({ baseUrl }) => {
     commit(types.SET_THEME, { theme })
   }
 
-  const setCreatorMode = ({ commit }) => {
-    commit(types.SET_MODE, { mode: appMode.CREATOR })
-  }
-
-  const setDiaryMode = ({ commit }) => {
-    commit(types.SET_MODE, { mode: appMode.DIARY })
-  }
-
-  const setContactsMode = ({ commit }) => {
-    commit(types.SET_MODE, { mode: appMode.CONTACTS })
-  }
-
   const switchOfflineMode = ({ commit, getters }, offlineMode) => {
     commit(types.SET_OFFLINE_MODE, { offlineMode: offlineMode || !getters.offlineMode })
   }
@@ -100,7 +77,7 @@ const actions = ({ baseUrl }) => {
     commit(types.SET_OFFLINE_RECOVERY_MODE, { offlineRecoveryMode: offlineRecoveryMode || !getters.offlineRecoveryMode })
   }
 
-  const updateUserPreference = ({ commit, getters }, { key, value }) => {
+  const updateUserPreference = ({ /* commit */ }, { key, value }) => {
     return new Promise((resolve, reject) => {
       if (!Prefs.hasOwnProperty(key)) {
         reject('Preference does not exists!')
@@ -116,9 +93,6 @@ const actions = ({ baseUrl }) => {
   return {
     initializeApplication,
     selectTheme,
-    setDiaryMode,
-    setContactsMode,
-    setCreatorMode,
     switchOfflineMode,
     updateUserPreference
   }
@@ -137,10 +111,6 @@ const mutations = {
     state.theme = theme;
   },
   
-  [types.SET_MODE] (st, { mode }) {
-    st.mode = mode;
-  },
-
   [types.SET_OFFLINE_MODE] (state, { offlineMode }) {
     state.offlineMode = offlineMode;
   },

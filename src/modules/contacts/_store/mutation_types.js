@@ -1,2 +1,3 @@
 export const SET_CONTACTS = 'SET_CONTACTS';
 export const ADD_CONTACT = 'ADD_CONTACT';
+export const SCOPE_CONTACT = 'SCOPE_CONTACT';

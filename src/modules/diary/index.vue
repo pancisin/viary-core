@@ -5,7 +5,7 @@
       ref="calendarColumn">
 
       <transition name="fade" mode="out-in">
-        <calendar v-if="$navigator.currentPath === '/'" />
+        <calendar v-if="$navigator.currentPath === ''" />
         <div v-else></div>
       </transition>
 
@@ -17,7 +17,8 @@
       </a>
     </div>
     <div class="col-lg-9">
-      <menu-bar class="pY-10" />
+      <!-- <menu-bar class="pY-10" /> -->
+      <diary-menu />
       <navigator-view />
     </div>
   </div>
@@ -27,7 +28,7 @@
 import Diary from './_components/Diary';
 import DiaryCreator from './_components/DiaryCreator';
 import Calendar from './_components/Calendar';
-import MenuBar from './_components/MenuBar';
+import DiaryMenu from './_components/DiaryMenu';
 
 import store from './_store';
 import SettingsModule from './_store/modules/Settings.module';
@@ -63,7 +64,7 @@ export default {
     }
   },
   components: {
-    MenuBar,
+    DiaryMenu,
     Diary,
     Calendar,
     DiaryCreator,
@@ -112,7 +113,7 @@ export default {
       }
     ]
 
-    Vue.use(DiaryNavigatorPlugin, { routes, basePath: this.$route.path })
+    Vue.use(DiaryNavigatorPlugin, { routes, basePath: this.$route ? this.$route.path : '/' })
     
     this.$store.registerModule(MODULE_NAMESPACE, store({ baseUrl: this.baseUrl }));
     this.$store.registerModule('$_settings', SettingsModule({ baseUrl: this.baseUrl }));

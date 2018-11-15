@@ -10,6 +10,8 @@ const DiaryRouterPlugin = {
     var routes = options.routes || [];
     const basePath = options.basePath || '';
 
+    var location = '/';
+
     routes = routes.map(r => {
       return {
         ...r,
@@ -24,7 +26,8 @@ const DiaryRouterPlugin = {
     }
 
     const getLocation = _ => {
-      return normalizePath(window.location.pathname.replace(basePath, ''));
+      return location;
+      // return normalizePath(window.location.pathname.replace(basePath, ''));
     }
 
     const eventBus = new Vue;
@@ -86,9 +89,10 @@ const DiaryRouterPlugin = {
       navigate: to => {
         switch (typeof to) {
           case "string":
-            window.history.pushState(null, null, '/' + normalizePath(basePath, to)); 
+            // window.history.pushState(null, null, '/' + normalizePath(basePath, to)); 
             eventBus.$emit('navigate', to)
             Vue.set(navigator, 'currentRoute', findRoute(to))
+            location = to;
             break;
           case "number":
             if (to === -1) {
@@ -101,9 +105,9 @@ const DiaryRouterPlugin = {
       } 
     }
 
-    window.addEventListener('popstate', () => {  
-      navigator.navigate(getLocation())
-    });
+    // window.addEventListener('popstate', () => {  
+    //   navigator.navigate(getLocation())
+    // });
 
     Vue.prototype.$navigator = navigator;
   }

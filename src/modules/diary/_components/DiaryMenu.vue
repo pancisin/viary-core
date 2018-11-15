@@ -1,21 +1,6 @@
 <template>
-  <div class="menu-bar d-flex jc-sb ai-c">
-    <span>
-      <navigator-link v-if="$navigator.route.nested" :to="-1">
-        <span class="lnr lnr-arrow-left fsz-xl"></span>
-      </navigator-link>
-
-      <transition name="fade" mode="out-in">
-        <span v-if="synchronizationInProgress">
-          <span class="lnr lnr-sync fsz-xl lnr-spin"></span>
-        </span>
-        <span v-else-if="$navigator.currentPath === ''">
-          {{ scopedDay.toFormat('W | MMMM yyyy') }}
-        </span>
-      </transition>
-    </span>
-
-    <span class="d-flex flex-row">
+  <menubar>
+    <span class="d-flex flex-row" slot="primary">
       <navigator-link v-if="$navigator.currentPath !== 'contacts'" to="/contacts" class="mR-15">
         <span class="lnr lnr-users fsz-xl"></span>
       </navigator-link>
@@ -68,36 +53,36 @@
           Logout 
         </dropdown-item>
       </dropdown>
-    </span>
 
-    <modal :show.sync="displaySwitchDiaryModal">
-      <span slot="header">Switch diary</span>
-      <div slot="body">
-        <diary-switch @switched="switchedDiary" />
-      </div>
-    </modal>
-
-    <modal :show.sync="displayDiaryOptionsModal">
-      <span slot="header">Edit diary</span>
-      <div slot="body">
-        <diary-editor :diary="scopedDiary" />
-
-        <h4>Appearance</h4>
-
-        <div class="d-flex flex-row flex-wrap">
-          <a 
-            v-for="(theme, idx) in themes" 
-            :key="idx" 
-            style="flex: 0 0 25%"
-            class="img-thumbnail"
-            @click="selectTheme(theme.id)">
-
-            <img :src="theme.imageUrl" class="w-100p h-100p">
-          </a>
+      <modal :show.sync="displaySwitchDiaryModal">
+        <span slot="header">Switch diary</span>
+        <div slot="body">
+          <diary-switch @switched="switchedDiary" />
         </div>
-      </div>
-    </modal>
-  </div>
+      </modal>
+
+      <modal :show.sync="displayDiaryOptionsModal">
+        <span slot="header">Edit diary</span>
+        <div slot="body">
+          <diary-editor :diary="scopedDiary" />
+
+          <h4>Appearance</h4>
+
+          <div class="d-flex flex-row flex-wrap">
+            <a 
+              v-for="(theme, idx) in themes" 
+              :key="idx" 
+              style="flex: 0 0 25%"
+              class="img-thumbnail"
+              @click="selectTheme(theme.id)">
+
+              <img :src="theme.imageUrl" class="w-100p h-100p">
+            </a>
+          </div>
+        </div>
+      </modal>
+    </span>
+  </menubar>
 </template>
 
 <script>
@@ -107,6 +92,8 @@ import { Modal } from '@/components/elements';
 import DiarySwitch from './DiarySwitch';
 import DiaryEditor from './DiaryEditor';
 
+import Menubar from '@/components/Menubar';
+ 
 // import gravatar from 'gravatar';
 
 export default {
@@ -117,6 +104,7 @@ export default {
     }
   },
   components: {
+    Menubar,
     Modal,
     DiarySwitch,
     Dropdown, 
@@ -124,7 +112,7 @@ export default {
     DiaryEditor
   },
   computed: {
-    ...mapGetters('$_diary', ['scopedDay', 'scopedDiary', 'synchronizationInProgress']),
+    ...mapGetters('$_diary', ['scopedDay', 'scopedDiary']),
     ...mapGetters('$_auth', ['user']),
     ...mapGetters('$_settings', ['themes', 'offlineMode']),
     profilePic () {
@@ -148,17 +136,6 @@ export default {
 }
 </script>
 
-<style lang="scss">
-.menu-bar {
-  height: 50px;
-}
+<style>
 
-.lnr-spin {
-  animation: spin 1s infinite linear;
-}
-
-@keyframes spin {
-  from { transform: scale(1) rotate(0deg); }
-  to { transform: scale(1) rotate(360deg); }
-}
 </style>

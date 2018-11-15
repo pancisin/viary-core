@@ -1,5 +1,11 @@
 <template>
   <div style="height: 100%">
+    <menubar-slot>
+      <a @click="displayCreateContactModal = true">
+        <span class="lnr lnr-cross fsz-xl" style="transform: rotateZ(45deg)"></span>
+      </a>
+    </menubar-slot>
+
     <div class="contacts-list">
       <div  v-for="(contactsList, char) in contactGroups" :key="char" >
         <h3 class="mT-15">
@@ -9,11 +15,11 @@
       </div>
     </div>
 
-    <div class="text-center mT-15">
+    <!-- <div class="text-center mT-15">
       <a @click="displayCreateContactModal = true">
         <i class="lnr lnr-plus-circle fsz-xl"></i>
       </a>
-    </div>
+    </div> -->
 
     <modal :show.sync="displayCreateContactModal">
       <span slot="header">Create contact</span>
@@ -31,11 +37,14 @@ import Contact from './Contact';
 import { Modal } from '@/components/elements';
 import { CreateContactForm } from './forms';
 
+import MenubarSlot from '@/components/MenubarSlot';
+
 export default {
   components: {
     Contact,
     Modal,
-    CreateContactForm
+    CreateContactForm,
+    MenubarSlot
   },
   data () {
     return {
@@ -46,7 +55,7 @@ export default {
     ...mapGetters('$_contacts', [ 'contacts' ]),
     contactGroups () {
       return this.contacts.reduce((acc, cur) => {
-        const sortChar = cur.name.lastName.charAt(0)
+        const sortChar = cur.name.lastName.charAt(0).toUpperCase()
 
         if (acc[sortChar] == null) {
           acc[sortChar] = []

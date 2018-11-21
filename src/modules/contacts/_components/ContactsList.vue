@@ -6,7 +6,7 @@
       </a>
     </menubar-slot>
 
-    <div class="contacts-list">
+    <div class="contacts-list" v-loading="loadingContactsInProgress">
       <div  v-for="(contactsList, char) in contactGroups" :key="char" >
         <h3 class="mT-15">
           {{ char }}
@@ -39,6 +39,8 @@ import { CreateContactForm } from './forms';
 
 import MenubarSlot from '@/components/MenubarSlot';
 
+import { Loading } from '@/directives';
+
 export default {
   components: {
     Contact,
@@ -51,8 +53,11 @@ export default {
       displayCreateContactModal: false
     }
   },
+  directives: {
+    Loading
+  },
   computed: {
-    ...mapGetters('$_contacts', [ 'contacts' ]),
+    ...mapGetters('$_contacts', [ 'contacts', 'loadingContactsInProgress' ]),
     contactGroups () {
       return this.contacts.reduce((acc, cur) => {
         const sortChar = cur.name.lastName.charAt(0).toUpperCase()
@@ -71,8 +76,12 @@ export default {
 
 <style lang="scss">
 .contacts-list {
-  height: calc(100vh - 100px);
+  height: calc(100vh - 50px);
   overflow-y: auto;
   padding-bottom: 10px;
+
+  &::-webkit-scrollbar {
+    width: 0px !important;
+  } 
 }
 </style>

@@ -11,7 +11,8 @@
         <input 
           ref="editInput"
           class="diary-day-content" 
-          v-model="noteCp.content" >
+          v-model="noteCp.content"
+          v-suggestor="suggestor" >
       </form>
       <div class="diary-day-note-controls">
         <a class="text-danger" @click="deleteNote">
@@ -31,8 +32,11 @@
 
 <script>
 import { ClickOutside } from '@/directives'
-import { mapActions } from 'vuex'
+import { Suggestor } from '../_directives';
+
+import { mapActions, mapGetters } from 'vuex'
 import { DateTime } from 'luxon'
+
 export default {
   props: {
     note: {
@@ -51,7 +55,8 @@ export default {
     }
   },
   directives: {
-    ClickOutside
+    ClickOutside,
+    Suggestor
   },
   data () {
     return {
@@ -66,6 +71,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('$_contacts', [ 'contacts' ]),
     noteParsed () {
       const res = this.noteCp.content.match(/([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9](PM|AM)?/)
       if (res != null) {
@@ -77,6 +83,12 @@ export default {
 
       return {
         content: this.noteCp.content
+      }
+    },
+    suggestor () {
+      return {
+        symbol: '@',
+        options: this.contacts
       }
     }
   },

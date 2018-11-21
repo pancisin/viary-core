@@ -8,6 +8,12 @@ export default ({ eventBus, getRoutes, getLocation }) => {
         default () {
           return false;
         }
+      },
+      keepAlive: {
+        type: Boolean,
+        default () {
+          return false;
+        }
       }
     },  
     data () {
@@ -16,12 +22,30 @@ export default ({ eventBus, getRoutes, getLocation }) => {
       }
     },
     render (h) {
-      const cmp = h(this.currentRoute.component, {
-        props: {
-          ...this.currentRoute.props
-        }
-      })
+      let cmp = null;
 
+      if (this.currentRoute == null) {
+
+      } else if (this.keepAlive) {
+        cmp = h('div', {}, [
+          ...getRoutes(this).map(x => {
+            return h(x.component, { 
+              props: { 
+                ...x.props 
+              },
+              style: {
+                display: this.currentRoute.path !== x.path ? 'none !important' : ''
+              }
+            })
+          })
+        ])
+      } else {
+        cmp = h(this.currentRoute.component, {
+          props: {
+            ...this.currentRoute.props
+          }
+        })
+      }
       
       return this.animated ? h('transition', { props: { 
         name: 'fade',

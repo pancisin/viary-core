@@ -7,16 +7,20 @@ export default options => {
   const api = DiaryApi(baseUrl)
 
   const initializeContactsList = ({ commit }, diaryId) => {
+    commit(types.SET_LOADING_CONTACTS_IN_PROGRESS, true);
     api.getContacts(diaryId).then(contacts => {
       commit(types.SET_CONTACTS, { contacts })
+      commit(types.SET_LOADING_CONTACTS_IN_PROGRESS, false);
     })
   }
 
   const createContact = ({ commit, rootGetters }, contact) => {
     const diaryId = rootGetters['$_diary/scopedDiary'].slug;
 
+    commit(types.SET_LOADING_CONTACTS_IN_PROGRESS, true);    
     api.postContact(diaryId, contact).then(result => {
       commit(types.ADD_CONTACT, { contact: result })
+      commit(types.SET_LOADING_CONTACTS_IN_PROGRESS, false);      
     })
   }
 

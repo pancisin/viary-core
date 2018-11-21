@@ -17,7 +17,6 @@
       </a>
     </div>
     <div class="col-lg-9">
-      <!-- <menu-bar class="pY-10" /> -->
       <diary-menu />
       <navigator-view />
     </div>
@@ -113,8 +112,8 @@ export default {
       }
     ]
 
-    Vue.use(DiaryNavigatorPlugin, { routes, basePath: this.$route ? this.$route.path : '/' })
-    
+    Vue.use(new DiaryNavigatorPlugin({ routes, basePath: this.$route ? this.$route.path : '/', root: this }))
+
     this.$store.registerModule(MODULE_NAMESPACE, store({ baseUrl: this.baseUrl }));
     this.$store.registerModule('$_settings', SettingsModule({ baseUrl: this.baseUrl }));
     Vue.http.interceptors.push(ErrorInterceptor(this.$store));

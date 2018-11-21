@@ -4,7 +4,7 @@ export default {
     this.$menubar.setDefaultSlot(this.$slots.default)
   },
   // beforeDestroy () {
-  //   this.$menubar.setDefaultSlot([]);
+    // this.$menubar.setDefaultSlot([]);
   // }
 }
 </script>

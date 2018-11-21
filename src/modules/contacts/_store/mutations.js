@@ -15,5 +15,9 @@ export default {
 
   [types.SCOPE_CONTACT] (state, { contact }) {
     state.scopedContact = contact;
+  },
+
+  [types.SET_LOADING_CONTACTS_IN_PROGRESS] (state, inProgress) {
+    state.loadingContactsInProgress = inProgress;
   }
 }

@@ -6,17 +6,12 @@ import NavigatorLink from './_components/navigatorLink.js';
 import { normalizePath } from '@/utils';
 
 import Vue from 'vue';
+import Route from './Route';
 
 export default class Navigator {
 
   constructor (options) {
-    this.routes = (options.routes || []).map(r => {
-      return {
-        ...r,
-        children: [],
-        path: normalizePath(r.path)
-      }
-    })
+    this.routes = (options.routes || []).map(r => new Route(r))
 
     this.basePath = options.basePath || '';
     this.location = '/';
@@ -26,19 +21,16 @@ export default class Navigator {
     this.root = options.root;
   }
  
-  findRoute = to => this.routes.map(r => {
-    if (r.children && r.children.length > 0) {
-      return r.children
-    }
+  findRoute = to => this.routes
+    .map(r => r.toArray())
+    .reduce((acc, cur) => {
+      cur.forEach(r => {
+        acc.push(r)
+      })
 
-    return [ r ]
-  }).reduce((acc, cur) => {
-    cur.forEach(r => {
-      acc.push(r)
-    })
-
-    return acc;
-  }, []).find(r => r.path === normalizePath(to));
+      return acc;
+    }, [])
+    .find(r => r.equals(to));
 
   getRoutes = inst => {
     const idx = this.routes.findIndex(r => r.component.name === inst.$parent.$options.name);
@@ -63,29 +55,15 @@ export default class Navigator {
 
     if (idx !== -1) {
       const parent = this.routes[idx];
-      const children = rts.map(r => {
-        return {
-          ...r,
-          path: normalizePath(parent.path, r.path),
-          relativePath: r.path,
-          nested: true
-        }
-      })
-
-      this.routes.splice(idx, 1, {
-        ...parent,
-        children
-      })
+      const children = rts.map(r => new Route(r, { parent }))
+      parent.addChild(...children);
     }
   }
 
   navigate = to => {
     // window.history.pushState(null, null, '/' + normalizePath(basePath, to)); 
     Vue.set(this, 'currentRoute', this.findRoute(to))
-
     this.eventBus.$emit('navigate', to)
-    // this.currentRoute = this.findRoute(to);
-
     this.location = to;
   } 
 

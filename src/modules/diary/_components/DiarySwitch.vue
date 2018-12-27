@@ -64,6 +64,7 @@ export default {
     diarySelectChagne (e) {
       if (e.target.value === this.createOptionValue) {
         this.$navigator.navigate('/create-diary')
+        this.$emit('switched', null)
       }
     }
   }

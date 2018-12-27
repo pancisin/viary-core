@@ -3,7 +3,7 @@ import { guid } from '@/utils';
 import NavigatorView from './_components/navigatorView';
 import NavigatorLink from './_components/navigatorLink.js';
 
-import { normalizePath } from '@/utils';
+// import { normalizePath } from '@/utils';
 
 import Vue from 'vue';
 import Route from './Route';

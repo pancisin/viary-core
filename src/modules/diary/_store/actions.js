@@ -213,7 +213,7 @@ export default (options) => {
   }
 
   const loadWeekData = ({ commit, getters, rootGetters, dispatch }, { weekNumber, year }) => {
-    const week = DateTime.fromObject({ weekNumber })
+    const week = DateTime.fromObject({ weekNumber, year })
     // if (getters.getDiaryWeek(weekNumber) == null) {
       
     const diarySlug = getters.scopedDiary.slug;

@@ -1,4 +1,4 @@
-FROM node:lts-alpine
+FROM node:12-alpine AS build
 
 WORKDIR /build
 
@@ -8,4 +8,6 @@ RUN npm install
 
 COPY . .
 
-RUN npm run build && npn publish
+RUN npm run build
+
+RUN --mount=type=secret,id=npmrc,target=/root/.npmrc npm publish
